@@ -62,6 +62,8 @@
 
 #define LOG_SYS_FILELINENUMBERS(LEVEL,MESSAGE) LOG_SYS(LEVEL,format [ARR_4('%1 - %2:%3',MESSAGE,__FILE__,__LINE__ + 1)])
 
+#define SYS_CHAT(MESSAGE) systemChat format ['(%1) [%2]: %3', toUpper 'PREFIX', toUpper 'COMPONENT', MESSAGE]
+
 #ifdef DEBUG_MODE
 
 	#define LOG(MESSAGE) LOG_SYS_FILELINENUMBERS('LOG',MESSAGE)
@@ -101,27 +103,27 @@
 
 #ifdef DEBUG_MODE
 
-#define WARNING(MESSAGE) LOG_SYS_FILELINENUMBERS('WARNING',MESSAGE)
-#define WARNING_1(MESSAGE,ARG1) WARNING(FORMAT_1(MESSAGE,ARG1))
-#define WARNING_2(MESSAGE,ARG1,ARG2) WARNING(FORMAT_2(MESSAGE,ARG1,ARG2))
-#define WARNING_3(MESSAGE,ARG1,ARG2,ARG3) WARNING(FORMAT_3(MESSAGE,ARG1,ARG2,ARG3))
-#define WARNING_4(MESSAGE,ARG1,ARG2,ARG3,ARG4) WARNING(FORMAT_4(MESSAGE,ARG1,ARG2,ARG3,ARG4))
-#define WARNING_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5) WARNING(FORMAT_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5))
-#define WARNING_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6) WARNING(FORMAT_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6))
-#define WARNING_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7) WARNING(FORMAT_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7))
-#define WARNING_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) WARNING(FORMAT_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8))
+	#define WARNING(MESSAGE) LOG_SYS_FILELINENUMBERS('WARNING',MESSAGE)
+	#define WARNING_1(MESSAGE,ARG1) WARNING(FORMAT_1(MESSAGE,ARG1))
+	#define WARNING_2(MESSAGE,ARG1,ARG2) WARNING(FORMAT_2(MESSAGE,ARG1,ARG2))
+	#define WARNING_3(MESSAGE,ARG1,ARG2,ARG3) WARNING(FORMAT_3(MESSAGE,ARG1,ARG2,ARG3))
+	#define WARNING_4(MESSAGE,ARG1,ARG2,ARG3,ARG4) WARNING(FORMAT_4(MESSAGE,ARG1,ARG2,ARG3,ARG4))
+	#define WARNING_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5) WARNING(FORMAT_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5))
+	#define WARNING_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6) WARNING(FORMAT_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6))
+	#define WARNING_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7) WARNING(FORMAT_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7))
+	#define WARNING_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) WARNING(FORMAT_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8))
 
 #else
 
-#define WARNING(MESSAGE) /* disabled */
-#define WARNING_1(MESSAGE,ARG1) /* disabled */
-#define WARNING_2(MESSAGE,ARG1,ARG2) /* disabled */
-#define WARNING_3(MESSAGE,ARG1,ARG2,ARG3) /* disabled */
-#define WARNING_4(MESSAGE,ARG1,ARG2,ARG3,ARG4) /* disabled */
-#define WARNING_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5) /* disabled */
-#define WARNING_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6) /* disabled */
-#define WARNING_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7) /* disabled */
-#define WARNING_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) /* disabled */
+	#define WARNING(MESSAGE) /* disabled */
+	#define WARNING_1(MESSAGE,ARG1) /* disabled */
+	#define WARNING_2(MESSAGE,ARG1,ARG2) /* disabled */
+	#define WARNING_3(MESSAGE,ARG1,ARG2,ARG3) /* disabled */
+	#define WARNING_4(MESSAGE,ARG1,ARG2,ARG3,ARG4) /* disabled */
+	#define WARNING_5(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5) /* disabled */
+	#define WARNING_6(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6) /* disabled */
+	#define WARNING_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7) /* disabled */
+	#define WARNING_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) /* disabled */
 
 #endif
 
@@ -151,6 +153,7 @@
 
 #define SCRIPT_FOLDER DOUBLES(PREFIX,COMPONENT)
 #define SCRIPT(var1) SCRIPT_FOLDER\fnc\fn_##var1##.sqf
+#define IMAGE(var1) SCRIPT_FOLDER\data\##var1##.paa
 
 #define DEF_FUNC(var1) class var1 {file = #SCRIPT(var1);}
 #define DEF_FUNC_PRE(var1) class var1 {file = #SCRIPT(var1); preInit = 1;}
@@ -162,6 +165,7 @@
 #define GET_VAR_D(var1,var2,var3) var1 getVariable [#var2,var3]
 #define GET_VAR(var1,var2) GET_VAR_D(var1,var2,nil)
 #define GET_VAR_ARR(var1,var2) GET_VAR_D(var1,var2,[])
+#define GET_MVAR(var1) GET_VAR(missionNamespace,var1)
 
 #define DEF_VAR(var1,var2) if(isNil #var1) then {var1 = var2}
 #define DEF_GVAR(var1,var2) DEF_VAR(GVAR(var1),var2)
@@ -172,9 +176,15 @@
 #define DEF_MVAR(var1,var2) DEF_NVAR(missionNamespace,var1,var2)
 #define DEF_MVAR_G(var1,var2) DEF_NVAR_G(missionNamespace,var1,var2)
 
+#define GET_ROBJ(var1,var2) missionNameSpace getVariable [ARR_2(FORMAT_2("%1_%2",var1,var2),objNull)]
+#define GET_ROBJ_L(var1,var2,var3) missionNameSpace getVariable [ARR_2(FORMAT_3("%1_%2_l%3",var1,var2,var3),objNull)]
+#define GET_ROBJ_L_T(var1,var2,var3,var4) missionNameSpace getVariable [ARR_2(FORMAT_4("%1_%2_l%3_t%4",var1,var2,var3,var4),objNull)]
+
 //#define ACTION_COND(var1,var2) FORMAT_1(QUOTE(!(((GET_VAR(var1,var2)) select %1) select 7)),_fieldId)
 #define ACTION_COND(var1,var2,var3) FORMAT_3(ARG_2(GET_VAR(%1,%2),%3),var1,var2,var3)
 //#define ACTION_COND_NOT(var1,var2) FORMAT_2(QUOTE(!ARG_2(%1,%2,7)),var1,var2)
+
+#define RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_useCustomTexture","_qualTiers"]
 
 #ifdef DEBUG_MODE
 	#define LOG_VAR(var1) LOG_2("%1: %2",QUOTE(var1),var1)
@@ -186,4 +196,3 @@
 	#define LOG_NVAR(var1,var2) /* disabled */
 	#define LOG_VAR(var1) /* disabled */
 #endif
-
