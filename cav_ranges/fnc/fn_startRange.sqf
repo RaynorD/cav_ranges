@@ -124,6 +124,7 @@ SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
 			_rangeScores set [_forEachIndex, _laneScore];
 			
 		} foreach _rangeTargets;
+		
 		SET_VAR_G(_objectCtrl,GVAR(rangeScores),_rangeScores);
 		[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
 		_handled = true;
@@ -145,36 +146,7 @@ sleep 1;
 _rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
 
 if(!isNil "_qualTiers") then {
-	_rangeScoreQuals = [];
-	{
-		if((count _rangeScores) > _forEachIndex) then {
-			_score = _rangeScores select _forEachIndex;
-			if(!isNil "_score") then {
-				_qual = -1;
-				if(count _qualTiers >= 1) then {
-					if(_score >= _qualTiers select 0) then {
-						_qual = 0;
-					} else {
-						if(count _qualTiers >= 2) then {
-							if(_score >= _qualTiers select 1) then {
-								_qual = 1;
-							} else {
-								if(count _qualTiers >= 3) then {
-									if(_score >= _qualTiers select 2) then {
-										_qual = 2;
-									};
-								};
-							};
-						};
-					};
-				};
-				_rangeScoreQuals set [_forEachIndex, _qual];
-			};
-		};
-	} foreach _rangeTargets;
-	
-	SET_VAR_G(_objectCtrl,GVAR(rangeScoreQuals),_rangeScoreQuals);
-	[_rangeTag, "qual"] remoteExec [QFUNC(updateUI),0];
+	[_this,true] spawn FUNC(updateQuals);
 };
 
 SET_VAR_G(_objectCtrl,GVAR(rangeActive),false);
