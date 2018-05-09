@@ -5,7 +5,7 @@ params [["_target",objNull],["_damage",0]];
 
 systemChat str _this; 
 
-if(_damage < (_target getVariable [QGVAR(expDmgThreshold), missionNamespace getVariable [QGVAR(expDmgThreshold),0.04]])) exitWith {true};
+if(_damage < (_target getVariable [QGVAR(expDmgThreshold), missionNamespace getVariable [QGVAR(expDmgThreshold),0.01]])) exitWith {true};
 
 _target animate ["terc", 1]; 
 

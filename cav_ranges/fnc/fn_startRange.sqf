@@ -90,7 +90,17 @@ SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
 					_targetsRaised pushBack _target;
 				} foreach _event;
 			} else { // grouping was used
-			
+				{
+					_groupTargets = _x;
+					{
+						_target = _laneTargets select (_x - 1);
+						_target animate ["terc", 0];
+						if(_target animationPhase "terc" != 0) then {
+							[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+						};
+						_targetsRaised pushBack _target;
+					} foreach _groupTargets;
+				} foreach _event;
 			};
 		} foreach _rangeTargets;
 		
