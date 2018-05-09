@@ -2,22 +2,27 @@
 
 // Running on server only
 
-RANGE_PARAMS;
+DEF_RANGE_PARAMS;
 
-LOG_1("StopRange: %1", str _this);
+LOG_1("StopRange: %1",_this);
 
-//_objectCtrl = missionNamespace getVariable [format ["%1_ctrl",_rangeTag],objNull];
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-
 if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
 
-//terminate (_objectCtrl getVariable [QGVAR(sequenceHandle), nil]);
-terminate (GET_VAR(_objectCtrl,GVAR(sequenceHandle)));
+_rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 
-//systemChat format ["%1 stopped %2", name (_objectCtrl getVariable [QGVAR(rangeActivator),nil]), _rangeTitle];
-systemChat format ["%1 stopped %2", name (GET_VAR(_objectCtrl,GVAR(rangeActivator))), _rangeTitle];
+{ 
+	_laneTargets = _x;
+	{
+		_target = _x;
+		_target setVariable ["nopop", nil, true];
+		_target animate ["terc",0];
+		if(_target animationPhase "terc" != 0) then {
+			[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+		};
+	} foreach _laneTargets;
+} foreach _rangeTargets;
 
-//_objectCtrl setVariable [QGVAR(rangeInteractable), true, true];
+SET_VAR_G(_objectCtrl,GVAR(rangeActive),false);
 SET_VAR_G(_objectCtrl,GVAR(rangeInteractable),true);
-
 

@@ -155,6 +155,9 @@
 #define SCRIPT(var1) SCRIPT_FOLDER\fnc\fn_##var1##.sqf
 #define IMAGE(var1) SCRIPT_FOLDER\data\##var1##.paa
 
+#define SYSCHAT_VAR(var) systemChat FORMAT_1(QUOTE(var: %1),var)
+#define LOG_VAR(var) LOG_1((QUOTE(var: %1),var)
+
 #define DEF_FUNC(var1) class var1 {file = #SCRIPT(var1);}
 #define DEF_FUNC_PRE(var1) class var1 {file = #SCRIPT(var1); preInit = 1;}
 #define DEF_FUNC_POST(var1) class var1 {file = #SCRIPT(var1); postInit = 1;}
@@ -180,11 +183,20 @@
 #define GET_ROBJ_L(var1,var2,var3) missionNameSpace getVariable [ARR_2(FORMAT_3("%1_%2_l%3",var1,var2,var3),objNull)]
 #define GET_ROBJ_L_T(var1,var2,var3,var4) missionNameSpace getVariable [ARR_2(FORMAT_4("%1_%2_l%3_t%4",var1,var2,var3,var4),objNull)]
 
+#define TYPE_ERROR(var1) ERROR_2("%1 was wrong type: %2",QUOTE(var1),typeName var1)
+#define TYPE_ERROR_INDEX(var1) ERROR_3("%1-%2 was wrong type: %3",QUOTE(var1),_forEachIndex+1,typeName var1)
+#define NIL_ERROR(var1) ERROR_1("%1 was nil", QUOTE(var1))
+#define NIL_ERROR_INDEX(var1) ERROR_2("%1-%2 was nil", QUOTE(var1),_forEachIndex+1)
+#define BOUNDS_ERROR(var1,var2) ERROR_2("%1: %2 was outside bounds", QUOTE(var1), var2)
+#define BOUNDS_ERROR_INDEX(var1,var2) ERROR_3("%1-%2: %3 was outside bounds", QUOTE(var1), _forEachIndex+1, var2)
+
 //#define ACTION_COND(var1,var2) FORMAT_1(QUOTE(!(((GET_VAR(var1,var2)) select %1) select 7)),_fieldId)
 #define ACTION_COND(var1,var2,var3) FORMAT_3(ARG_2(GET_VAR(%1,%2),%3),var1,var2,var3)
 //#define ACTION_COND_NOT(var1,var2) FORMAT_2(QUOTE(!ARG_2(%1,%2,7)),var1,var2)
 
-#define RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_useCustomTexture","_qualTiers"]
+#define GET_CTRL(var) ((findDisplay 46) displayCtrl var)
+
+#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers"]
 
 #ifdef DEBUG_MODE
 	#define LOG_VAR(var1) LOG_2("%1: %2",QUOTE(var1),var1)
