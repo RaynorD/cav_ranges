@@ -1,6 +1,38 @@
+/* ----------------------------------------------------------------------------
+Function: CAV_Ranges_fnc_cancelRange
+
+Description:
+	Cancels a range sequence in progress.
+	
+	Run via remoteExec at the request of a client.
+	
+Parameters:
+	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
+	Title - String representation of the range [String]
+	Tag - Internal prefix used for the range, so it can find range objects [String]
+	Lane Count - How many lanes there are [Number]
+	Target Count - Number of targets per range [Number]
+	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
+	Grouping - target groupings [Array of Arrays of Numbers]
+	Qualitification Tiers - number of targets to attain each qual [Array of numbers]
+
+Locality:
+	Server
+	
+Returns: 
+	Nothing
+
+Examples:
+	_this remoteExec [CAV_Ranges_fnc_cancelRange,2];
+
+Author:
+	=7Cav=WO1.Raynor.D
+
+---------------------------------------------------------------------------- */
+
 #include "..\script_macros.hpp"
 
-// Running on server only
+
 
 LOG_1("CancelRange: %1",_this);
 

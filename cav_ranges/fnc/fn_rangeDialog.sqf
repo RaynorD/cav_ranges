@@ -1,3 +1,69 @@
+/* ----------------------------------------------------------------------------
+Function: CAV_Ranges_fnc_rangeDialog
+
+Description:
+	Initializes a range's dialog on clients.
+
+Parameters:
+	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
+	Title - String representation of the range [String]
+	Tag - Internal prefix used for the range, so it can find range objects [String]
+	Lane Count - How many lanes there are [Integer]
+	Target Count - Number of targets per range [Integer]
+	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
+	Grouping - target groupings [Array of Arrays of Numbers]
+	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+
+Returns: 
+	Nothing
+
+Locality:
+	Clients
+
+Examples:
+    [
+		"targets", 	//	"targets" : pop up targets, terc animation is used
+					//	"spawn"   : spawned units, targets being alive/dead is used
+		"Pistol Range",	// Title
+		"r1",			// Tag
+		1,				// Lane count
+		10,				// Targets per lane
+		[				
+										// Range sequence
+											// First element defines the type of event:
+											//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
+											//		STRING: Message to show on the lane UI. Third element is not used in this case
+											// Second element: seconds length/delay for that event
+											// Third element (optional): delay between end of this event and start of the next, default 2 if not present
+			["Load a magazine.",5], 	//show message for 5 seconds
+			["Range is hot!",3],
+			[[1],5], 					// raise first target for 5 seconds
+			[[3],5],
+			[[7],2],
+			[[4],2],
+			[[9],5],
+			["Reload.",5],
+			["Range is hot!",3],
+			[[2,7],8], 					// raise targets 2 and 7 for 5 seconds
+			[[1,10],8],
+			[[7,4],5],
+			[[6,2],5],
+			[[7,10],5],
+			["Safe your weapon.",3],
+			["Range complete.",0]
+		],
+		nil,							// target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
+										//     a particular target can be in multiple groups
+		[13,11,9]						// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
+										//     values below the last element will show no go
+										//     Not all three are required, [35] would simply return expert above 35, and no go below that
+	] spawn CAV_Ranges_fnc_rangeDialog;
+
+Author:
+	=7Cav=WO1.Raynor.D
+
+---------------------------------------------------------------------------- */
+
 #include "..\script_macros.hpp"
 
 // Running locally on clients only
@@ -23,9 +89,7 @@ _uiY = safeZoneY + safeZoneH * 0.3;
 _uiW = safeZoneW * 0.2;
 _uiH = safeZoneH * 0.12;
 
-_colorTest = [1,0,0,0.0];
-_colorTest2 = [0,1,0,0.0];
-
+// animation time for dialog to slide in/out
 _animTime = 0.5;
 
 _rangeLanes = GET_VAR(_objectCtrl,GVAR(rangeTargets));
@@ -33,15 +97,16 @@ _rangeLanes = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 disableSerialization;
 
 while{true} do {
-	
+	// wait until player enters the trigger area for this range
 	waitUntil {sleep 1; player in list _objectUiTrigger};
-	//SystemChat format ["Player entered %1", _objectUiTrigger];
+	
 	_idc = 78918;
 	
 	_laneControls = [];
 	_mainCtrls = [];
 	
-	// 78918
+	// Control group which all controls live inside
+	// This is so the dialog can be moved
 	_ctrlGroup = (findDisplay 46) ctrlCreate ["RscControlsGroup", _idc]; 
 	_ctrlGroup ctrlSetPosition [_uiX0, _uiY, _uiW, _uiH];
 	_ctrlGroup ctrlCommit 0;
@@ -49,7 +114,7 @@ while{true} do {
 	SET_VAR(_objectCtrl,GVAR(idcGroup),_idc);
 	_idc = _idc + 1;
 	
-	// 78919
+	// Background color
 	_bg = (findDisplay 46) ctrlCreate ["RscText", _idc, _ctrlGroup];
 	_bg ctrlSetBackgroundColor [0, 0, 0, 0.5];
 	_bg ctrlSetPosition [0, 0, _uiW, _uiH];
@@ -57,7 +122,7 @@ while{true} do {
 	_mainCtrls pushBack _idc;
 	_idc = _idc + 1;
 	
-	// 78920
+	// Dialog title, shows range title
 	_lblTitle = (findDisplay 46) ctrlCreate ["RscStructuredText", _idc, _ctrlGroup];
 	_lblTitle ctrlSetPosition [0, 0, _uiW, (safeZoneH * 0.027)];
 	_lblTitle ctrlSetBackgroundColor [0,0,0,0.5];
@@ -68,30 +133,28 @@ while{true} do {
 	
 	_nextLineY = (ctrlPosition _lblTitle select 1) + (ctrlPosition _lblTitle select 3);
 	
-	// 78921
+	// Range message that shows text events in the range sequence
 	_txtMessage = (findDisplay 46) ctrlCreate ["RscText", _idc, _ctrlGroup];
 	_txtMessage ctrlSetPosition [0, _nextLineY, _uiW, _lineHeight * 1.1];
 	_txtMessage ctrlSetBackgroundColor [0,0,0,0.3];
 	_txtMessage ctrlSetTextColor [1, 1, 1, 1];
-	//_txtMessage ctrlSetText "Range on standby...";
 	_txtMessage ctrlCommit 0;
 	_mainCtrls pushBack _idc;
 	SET_VAR(_objectCtrl,GVAR(idcMessage),_idc);
 	_idc = _idc + 1;
 	
+	// check if message is set already
 	_message = GET_VAR(_objectCtrl,GVAR(rangeMessage));
 	if(!isNil "_message") then {
 		_txtMessage ctrlSetText (_message select 0);
 	};
 	
-	//_nextLineY = (ctrlPosition _txtMessage select 1) + (ctrlPosition _txtMessage select 3);
 	
-	// 78922
+	// Yellow progress bar for text events
 	_ctrlTimer = (findDisplay 46) ctrlCreate ["RscText", _idc, _ctrlGroup];
 	_ctrlTimer ctrlSetPosition [0, _nextLineY, 0, _lineHeight * 0.1];
 	_ctrlTimer ctrlSetBackgroundColor [1,0.8,0,1];
 	_ctrlTimer ctrlSetTextColor [1, 1, 1, 1];
-	//_ctrlTimer ctrlSetText "";
 	_ctrlTimer ctrlCommit 0;
 	_mainCtrls pushBack _idc;
 	SET_VAR(_objectCtrl,GVAR(idcTimer),_idc);
@@ -99,25 +162,25 @@ while{true} do {
 	
 	_nextLineY = (ctrlPosition _txtMessage select 1) + (ctrlPosition _txtMessage select 3);
 	
+	// load range data if it exists
 	_scores = GET_VAR(_objectCtrl,GVAR(rangeScores));
 	_qual = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 	_shooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
 	
-	// 78923 and up
 	{
 		_rowCtrls = [];
+		
+		// Far left static label for lane, L-1, L-2, etc
 		_lblLane = (findDisplay 46) ctrlCreate ["RscStructuredText", _idc, _ctrlGroup];
 		_lblLane ctrlSetPosition [0, _nextLineY, _uiW * 0.1, _lineHeight];
-		//_lblLane ctrlSetBackgroundColor _colorTest;
 		_lblLane ctrlSetStructuredText parseText format ["<t size='%1'>&#160;</t><br/><t align='left'>L-%2</t>", _vertTxtPad, _forEachIndex + 1];
 		_lblLane ctrlCommit 0;
 		_rowCtrls pushBack _idc;
 		_idc = _idc + 1;
 		
+		// Shows current/possible score for that lane, 40/40
 		_txtScore = (findDisplay 46) ctrlCreate ["RscStructuredText", _idc, _ctrlGroup];
 		_txtScore ctrlSetPosition [_uiW * 0.1, _nextLineY, _uiW * 0.2, _lineHeight];
-		_txtScore ctrlSetBackgroundColor _colorTest2;
-		
 		_txtScore ctrlCommit 0;
 		_rowCtrls pushBack _idc;
 		_idc = _idc + 1;
@@ -125,6 +188,7 @@ while{true} do {
 		_scoreText = "-";
 		_scorePossibleText = "-";
 		
+		// read current score
 		_text = format ["<t size='%1'>&#160;</t><br/><t align='center'>- / -</t>", _vertTxtPad];
 		if(!isNil "_scores") then {
 			_laneScore = _scores select _forEachIndex;
@@ -133,11 +197,13 @@ while{true} do {
 			};
 		};
 		
+		// read possible score
 		_rangeScorePossible = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 		if(!isNil "_rangeScorePossible") then {
 			_scorePossibleText = _rangeScorePossible;
 		};
 		
+		// actually set text
 		_txtScore ctrlSetStructuredText parseText format [
 			"<t size='%1'>&#160;</t><br/><t align='center'>%2 / %3</t>",
 			_vertTxtPad,
@@ -145,10 +211,9 @@ while{true} do {
 			_scorePossibleText
 		];
 		
+		// Qualification tier. Shows badge and two letter abbreviation.
 		_txtQual = (findDisplay 46) ctrlCreate ["RscStructuredText", _idc, _ctrlGroup];
 		_txtQual ctrlSetPosition [_uiW * 0.3, _nextLineY, _uiW * 0.2, _lineHeight];
-		//_txtQual ctrlSetBackgroundColor _colorTest;
-		//_txtQual ctrlSetStructuredText parseText format ["<t size='%1'>&#160;</t><br/><t align='center'><img image='%2' /> %3</t>", _vertTxtPad, "cav_ranges\data\expert.paa", "EX"];
 		_txtQual ctrlCommit 0;
 		_rowCtrls pushBack _idc;
 		_idc = _idc + 1;
@@ -164,9 +229,10 @@ while{true} do {
 					if(_laneQual >= 0) then {
 						_qualText = GVAR(scoreTiers) select _laneQual;
 					} else {
+						// need to find a better place for this, maybe not use -1 for it
 						_qualText = ["NG",QUOTE(IMAGE(nogo))];
 					};
-
+					
 					_txtQual ctrlSetStructuredText parseText format [
 						"<t size='%1'>&#160;</t><br/><t align='center'><img image='%2' /> %3</t>",
 						_vertTxtPad,
@@ -177,10 +243,9 @@ while{true} do {
 			};
 		};
 		
+		// Shows current person shooting at this lane
 		_txtShooter = (findDisplay 46) ctrlCreate ["RscStructuredText", _idc, _ctrlGroup];
 		_txtShooter ctrlSetPosition [_uiW * 0.50, _nextLineY, _uiW * 0.5, _lineHeight];
-		//_txtShooter ctrlSetBackgroundColor _colorTest2;
-		//_txtShooter ctrlSetStructuredText parseText format ["<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", _vertTxtPad, "WO1.Raynor.D"];
 		_txtShooter ctrlCommit 0;
 		_rowCtrls pushBack _idc;
 		_idc = _idc + 1;
@@ -201,25 +266,28 @@ while{true} do {
 		_laneControls pushBack _rowCtrls;
 	} foreach _rangeLanes;
 	
+	// save idcs to control object so other functions can update their text
 	SET_VAR(_objectCtrl,GVAR(idcLanes),_laneControls);
 	
+	// start slide out animation
 	_ctrlGroup ctrlSetPosition [_uiX, _uiY, _uiW, _uiH];
 	_ctrlGroup ctrlCommit _animTime;
 	
+	// wait for animation to finish
 	sleep _animTime;
 	
+	// wait until player leaves the range trigger
 	waitUntil {sleep 1; !(player in list _objectUiTrigger)};
 	
-	//SystemChat format ["Player left %1", _objectUiTrigger];
-	
+	// slide dialog off screen
 	_ctrlGroup ctrlSetPosition [_uiX0, _uiY, _uiW, _uiH];
 	_ctrlGroup ctrlCommit _animTime;
 	sleep _animTime;
 	
+	// delete controls
 	{
 		ctrlDelete GET_CTRL(_x); 
 	} foreach _mainCtrls;
-	
 	{
 		{
 			ctrlDelete GET_CTRL(_x); 

@@ -1,11 +1,41 @@
-#include "..\script_macros.hpp"
+/* ----------------------------------------------------------------------------
+Function: CAV_Ranges_fnc_updateUI
 
-// run on clients via server remoteExec to asyncronously but immediately update ui values
+Description:
+	Updates UI information on clients.
+
+Parameters:
+	Tag - Internal prefix used for the range, so it can find range objects [String]
+	Element - The UI element that should be updated [String]
+	Data - Payload data
+		(not used, data is always saved to object namespace first for players that
+		enter the range trigger to read)
+
+Returns: 
+	Nothing
+
+Locality:
+	Global
+	(Exited on dedicated server)
+
+Examples:
+    [
+		"r1",
+		"message"
+	] spawn CAV_Ranges_fnc_updateUI;
+
+Author:
+	=7Cav=WO1.Raynor.D
+
+---------------------------------------------------------------------------- */
+
+#include "..\script_macros.hpp"
 
 disableSerialization;
 
 if(!hasInterface) exitWith {};
 
+// TODO: Don't think data is needed
 params ["_rangeTag","_element",["_data",nil]];
 
 //SYSCHAT_VAR(_this);
@@ -25,7 +55,7 @@ _ctrlGroupPos = ctrlPosition _ctrlGroup;
 _vertTxtPad = 0.2;
 
 switch (_element) do {
-	case "message" : { // _data = array [_stringText,_integerDelay]
+	case "message" : {
 		_idcMessage = GET_VAR(_objectCtrl,GVAR(idcMessage));
 		if(isNil "_idcMessage") then {NIL_ERROR(_idcMessage)} else {
 			_text = "";
@@ -82,7 +112,7 @@ switch (_element) do {
 			};
 		};
 	};
-	case "scores" : { // _data = array of integers, for each lane score
+	case "scores" : {
 		_scorePossible = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
@@ -118,8 +148,7 @@ switch (_element) do {
 			} foreach _idcLanes;
 		};
 	};
-	case "qual" : { // _data = array of integers, quals for each lane
-		
+	case "qual" : {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			{
@@ -156,8 +185,7 @@ switch (_element) do {
 			} foreach _idcLanes;
 		};
 	};
-	case "shooter" : { // _data = array of strings, shooter names
-		
+	case "shooter" : {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			{
