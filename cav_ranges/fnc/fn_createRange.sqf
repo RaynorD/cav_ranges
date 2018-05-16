@@ -76,6 +76,8 @@ DEF_RANGE_PARAMS;
 
 LOG_1("CreateRange: %1",_rangeTitle);
 
+waitUntil {sleep 0.1; !isNull player}; // a stab at fixing JIP addactions
+
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
 if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
 
