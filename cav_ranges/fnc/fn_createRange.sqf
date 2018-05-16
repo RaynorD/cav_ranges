@@ -124,6 +124,16 @@ if(_rangeType == "spawn") then {
 	SET_RANGE_VAR(rangeTargetData,_rangeTargetData);
 };
 
+if(!isDedicated) then {
+	// run dialog on clients
+	_this spawn FUNC(rangeDialog);
+};
+
+if(isServer) then {
+	// watch and update lanes' shooters
+	_this spawn FUNC(watchCurrentShooter);
+};
+
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
@@ -169,17 +179,16 @@ switch _rangeType do {
 	
 	// targets are killed, like an AT range
 	case "spawn" : {
-		if(hasInterface) then {
-			// TODO: check that works in JIP
-			_objectCtrl addAction ["Reset Range", {
-				SET_VAR_G((_this select 0),GVAR(rangeReset),true);
-				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-		};
+		// TODO: Now reset doesn't work
+		// TODO: check that works in JIP
+		_objectCtrl addAction ["Reset Range", {
+			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
+			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+		}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 		
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
-			LOG_1("rangeScorePossible: %1",count (_rangeTargets select 0));
+
 			
 			//initialize range scores to 0: [0,0,0,0];
 			_scores = [];
@@ -297,14 +306,4 @@ switch _rangeType do {
 	default { // shouldn't happen unless misconfigured
 		ERROR_1("CreateRange received unknown range type: %1",_rangeType);
 	};
-};
-
-if(hasInterface) then {
-	// run dialog on clients
-	_this spawn FUNC(rangeDialog);
-};
-
-if(isServer) then {
-	// watch and update lanes' shooters
-	_this spawn FUNC(watchCurrentShooter);
 };

@@ -31,7 +31,7 @@ Author:
 
 #include "..\script_macros.hpp"
 
-// Running locally on clients only
+if(isDedicated) exitWith {};
 
 DEF_RANGE_PARAMS;
 
