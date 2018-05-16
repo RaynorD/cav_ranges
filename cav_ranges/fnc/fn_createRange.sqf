@@ -125,23 +125,25 @@ if(_rangeType == "spawn") then {
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
-		// TODO: move to initPlayer.sqf?
-		if(GET_VAR_D(player,GVAR(instructor),false)) then {
-			_objectCtrl addAction ["Start Range", {
-				SET_VAR_G((_this select 0),GVAR(rangeActive),true);
-				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-			}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			_objectCtrl addAction ["Stop Range", {
-				//(_this select 0) setVariable [QGVAR(rangeActive),false,true];
-				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-				//(_this select 0) setVariable [QGVAR(rangeInteractable),false,true];
-				(_this select 3) remoteExec [QFUNC(cancelRange),2];
-			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			// reset range UI after running the course
-			_objectCtrl addAction ["Reset Range Data", {
-				(_this select 3) spawn FUNC(resetRangeData);
-			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+		// TODO: check that works in JIP
+		if(hasInterface) then {
+			if(GET_VAR_D(player,GVAR(instructor),false)) then {
+				_objectCtrl addAction ["Start Range", {
+					SET_VAR_G((_this select 0),GVAR(rangeActive),true);
+					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+					SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+				}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+				_objectCtrl addAction ["Stop Range", {
+					//(_this select 0) setVariable [QGVAR(rangeActive),false,true];
+					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+					//(_this select 0) setVariable [QGVAR(rangeInteractable),false,true];
+					(_this select 3) remoteExec [QFUNC(cancelRange),2];
+				}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+				// reset range UI after running the course
+				_objectCtrl addAction ["Reset Range Data", {
+					(_this select 3) spawn FUNC(resetRangeData);
+				}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+			};
 		};
 		
 		if(isServer) then {
@@ -165,6 +167,14 @@ switch _rangeType do {
 	
 	// targets are killed, like an AT range
 	case "spawn" : {
+		if(hasInterface) then {
+			// TODO: check that works in JIP
+			_objectCtrl addAction ["Reset Range", {
+				SET_VAR_G((_this select 0),GVAR(rangeReset),true);
+				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+		};
+		
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
 			
@@ -279,12 +289,6 @@ switch _rangeType do {
 				sleep 1;
 			};
 		};
-
-		// TODO: move to initPlayer.sqf?
-		_objectCtrl addAction ["Reset Range", {
-			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
-			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-		}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 	};
 	default { // shouldn't happen unless misconfigured
 		ERROR_1("CreateRange received unknown range type: %1",_rangeType);
