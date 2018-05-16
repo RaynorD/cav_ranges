@@ -36,10 +36,10 @@ DEF_RANGE_PARAMS;
 LOG_1("StartRange: %1", str _this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
-if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
 systemChat format ["%1 started %2", name (GET_VAR(_objectCtrl,GVAR(rangeActivator))), _rangeTitle];
 _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));

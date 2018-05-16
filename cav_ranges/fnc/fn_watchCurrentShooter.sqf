@@ -39,10 +39,10 @@ DEF_RANGE_PARAMS;
 LOG_1("watchCurrentShooter: %1", str _this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-_objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
-if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+_objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
+if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
 _rangeLanes = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 

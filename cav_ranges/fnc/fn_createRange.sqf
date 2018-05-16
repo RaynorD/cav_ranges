@@ -79,10 +79,10 @@ LOG_1("CreateRange: %1",_rangeTitle);
 waitUntil {sleep 0.1; !isNull player}; // a stab at fixing JIP addactions
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
-if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
 SET_RANGE_VAR(rangeActive,false);
 SET_RANGE_VAR(rangeInteractable,true);
@@ -179,6 +179,7 @@ switch _rangeType do {
 		
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
+			LOG_1("rangeScorePossible: %1",count (_rangeTargets select 0));
 			
 			//initialize range scores to 0: [0,0,0,0];
 			_scores = [];
@@ -186,6 +187,7 @@ switch _rangeType do {
 				_scores pushBack 0;
 			};
 			SET_RANGE_VAR(rangeScores,_scores);
+			LOG_1("rangeScores: %1",_scores);
 			
 			[_rangeTag,"scores"] remoteExec [QFUNC(updateUI),0];
 			
@@ -297,7 +299,7 @@ switch _rangeType do {
 	};
 };
 
-if(!isDedicated) then {
+if(hasInterface) then {
 	// run dialog on clients
 	_this spawn FUNC(rangeDialog);
 };

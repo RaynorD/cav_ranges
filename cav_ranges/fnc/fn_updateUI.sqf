@@ -38,10 +38,10 @@ params ["_rangeTag","_element",["_data",nil]];
 //SYSCHAT_VAR(_this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2",FORMAT_1("%1_ctrl",_rangeTag),_this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
-if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2",FORMAT_1("%1_trg",_rangeTag),_this)};
+if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
 if(!(player in list _objectUiTrigger)) exitWith {LOG("Not in trigger");};
 

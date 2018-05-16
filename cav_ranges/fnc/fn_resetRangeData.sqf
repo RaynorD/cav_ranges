@@ -35,7 +35,7 @@ LOG_1("ResetRangeData: %1",_this);
 DEF_RANGE_PARAMS;
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
 SET_RANGE_VAR(rangeMessage,nil);
 [_rangeTag,"message"] remoteExec [QFUNC(updateUI),0];

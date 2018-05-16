@@ -38,7 +38,7 @@ DEF_RANGE_PARAMS;
 LOG_1("StopRange: %1",_this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
 _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 

@@ -38,10 +38,10 @@ DEF_RANGE_PARAMS;
 LOG_1("RangeDialog: %1", str _this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
-if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) is null: %3",_rangeTag,"ctrl",_this)};
 
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
-if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
+if(isNull _objectUiTrigger) exitWith {ERROR_3("Range UI Trigger (%1_%2) is null: %3",_rangeTag,"trg", _this)};
 
 _textSize = (0.47 / (getResolution select 5));
 
