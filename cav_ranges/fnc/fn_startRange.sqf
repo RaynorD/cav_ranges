@@ -5,7 +5,7 @@ Description:
 	Starts the sequence for a popup target range.
 	Not used for spawn ranges.
 
-Parameters:
+Parameters (Standard range parameters, see fn_createRange for detailed info):
 	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
 	Title - String representation of the range [String]
 	Tag - Internal prefix used for the range, so it can find range objects [String]
@@ -22,43 +22,7 @@ Locality:
 	Server
 
 Examples:
-    [
-		"targets", 	//	"targets" : pop up targets, terc animation is used
-					//	"spawn"   : spawned units, targets being alive/dead is used
-		"Pistol Range",	// Title
-		"r1",			// Tag
-		1,				// Lane count
-		10,				// Targets per lane
-		[				
-										// Range sequence
-											// First element defines the type of event:
-											//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
-											//		STRING: Message to show on the lane UI. Third element is not used in this case
-											// Second element: seconds length/delay for that event
-											// Third element (optional): delay between end of this event and start of the next, default 2 if not present
-			["Load a magazine.",5], 	//show message for 5 seconds
-			["Range is hot!",3],
-			[[1],5], 					// raise first target for 5 seconds
-			[[3],5],
-			[[7],2],
-			[[4],2],
-			[[9],5],
-			["Reload.",5],
-			["Range is hot!",3],
-			[[2,7],8], 					// raise targets 2 and 7 for 5 seconds
-			[[1,10],8],
-			[[7,4],5],
-			[[6,2],5],
-			[[7,10],5],
-			["Safe your weapon.",3],
-			["Range complete.",0]
-		],
-		nil,							// target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
-										//     a particular target can be in multiple groups
-		[13,11,9]						// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
-										//     values below the last element will show no go
-										//     Not all three are required, [35] would simply return expert above 35, and no go below that
-	] spawn CAV_Ranges_fnc_startRange;
+    _this spawn CAV_Ranges_fnc_startRange;
 
 Author:
 	=7Cav=WO1.Raynor.D
@@ -105,7 +69,7 @@ while{true} do {
 	
 	LOG("Waiting for all targets to reset");
 	_msgData = ["Waiting for all targets to reset...",2];
-	SET_VAR_G(_objectCtrl,GVAR(rangeMessage),_msgData);
+	SET_RANGE_VAR(rangeMessage,_msgData);
 	[_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
 	sleep 2;
 };
@@ -126,13 +90,13 @@ _this spawn FUNC(resetRangeData);
 
 _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 
-SET_VAR_G(_objectCtrl,GVAR(rangeInteractable),true);
+SET_RANGE_VAR(rangeInteractable,true);
 
 sleep 0.1;
 
 // reset range scores
-SET_VAR_G(_objectCtrl,GVAR(rangeScores),_rangeScores);
-SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
+SET_RANGE_VAR(rangeScores,_rangeScores);
+SET_RANGE_VAR(rangeScorePossible,0);
 [_rangeTag,"scores"] remoteExec [QFUNC(updateUI),0];
 
 // start range sequence
@@ -140,7 +104,7 @@ SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
 	_x params [["_event","Standby..."],["_delay",5],["_delay2",2]];
 	_handled = false;
 	if(typeName _event == "STRING") then { // range message, show message and progress bar
-		SET_VAR_G(_objectCtrl,GVAR(rangeMessage),_x);
+		SET_RANGE_VAR(rangeMessage,_x);
 		[_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
 		sleep _delay;
 		_handled = true;
@@ -191,13 +155,13 @@ SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
 					[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
 				};
 				// update possible score
-				SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),((GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0))+1));
+				SET_RANGE_VAR(rangeScorePossible,((GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0))+1));
 			} foreach _targetsRaised;
 			_rangeScores set [_forEachIndex, _laneScore];
 			
 		} foreach _rangeTargets;
 		
-		SET_VAR_G(_objectCtrl,GVAR(rangeScores),_rangeScores);
+		SET_RANGE_VAR(rangeScores,_rangeScores);
 		[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
 		_handled = true;
 		sleep _delay2;
@@ -208,7 +172,7 @@ SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible),0);
 	};
 } foreach _rangeSequence;
 
-SET_VAR_G(_objectCtrl,GVAR(rangeInteractable),false);
+SET_RANGE_VAR(rangeInteractable,false);
 
 sleep 1;
 
@@ -218,7 +182,7 @@ if(!isNil "_qualTiers") then {
 	[_this,true] spawn FUNC(updateQuals);
 };
 
-SET_VAR_G(_objectCtrl,GVAR(rangeActive),false);
+SET_RANGE_VAR(rangeActive,false);
 
 // This is all just for a systemChat of the results after a range is done, so a chat record is available
 _possibleScore = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));

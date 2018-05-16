@@ -14,7 +14,7 @@ Parameters:
 	Target Count - Number of targets per range [Integer]
 	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
 	Grouping - target groupings [Array of Arrays of Numbers]
-	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+	Qualification Tiers - number of targets to attain each qual [Array of Integers]
 
 Returns: 
 	Nothing
@@ -24,12 +24,13 @@ Locality:
 
 Examples:
     [
-		"targets", 	//	"targets" : pop up targets, terc animation is used
-					//	"spawn"   : spawned units, targets being alive/dead is used
-		"Pistol Range",	// Title
-		"r1",			// Tag
-		1,				// Lane count
-		10,				// Targets per lane
+		"targets", 						// Mode
+										//     "targets" : pop up targets, terc animation is used
+										//     "spawn"   : spawned units, targets being alive/dead is used
+		"Pistol Range",					// Title
+		"r1",							// Tag
+		1,								// Lane count
+		10,								// Targets per lane
 		[				
 										// Range sequence
 											// First element defines the type of event:
@@ -81,8 +82,8 @@ if(isNull _objectCtrl) exitWith {ERROR_2("Range control object (%1) is null: %2"
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
 if(isNull _objectUiTrigger) exitWith {ERROR_2("Range UI Trigger (%1) is null: %2", format ["%1_ctrl",_rangeTag], _this)};
 
-SET_VAR_G(_objectCtrl,GVAR(rangeActive),false);
-SET_VAR_G(_objectCtrl,GVAR(rangeInteractable),true);
+SET_RANGE_VAR(rangeActive,false);
+SET_RANGE_VAR(rangeInteractable,true);
 
 // if the control object is a signpost, use 7Cav image
 if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
@@ -115,16 +116,16 @@ for "_i" from 1 to _laneCount do {
 	_rangeTargets pushBack _laneTargets;
 };
 
-SET_VAR_G(_objectCtrl,GVAR(rangeTargets),_rangeTargets);
+SET_RANGE_VAR(rangeTargets,_rangeTargets);
 
 if(_rangeType == "spawn") then {
-	SET_VAR_G(_objectCtrl,GVAR(rangeTargetData),_rangeTargetData);
+	SET_RANGE_VAR(rangeTargetData,_rangeTargetData);
 };
 
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
-		// TODO: move to initPlayer.sqf
+		// TODO: move to initPlayer.sqf?
 		if(GET_VAR_D(player,GVAR(instructor),false)) then {
 			_objectCtrl addAction ["Start Range", {
 				SET_VAR_G((_this select 0),GVAR(rangeActive),true);
@@ -151,7 +152,7 @@ switch _rangeType do {
 					waitUntil { sleep 0.5; _objectCtrl getVariable [QGVAR(rangeActive), false]};
 					
 					// run range and save handle
-					SET_VAR_G(_objectCtrl,GVAR(sequenceHandle),_args spawn FUNC(startRange));
+					SET_RANGE_VAR(sequenceHandle,_args spawn FUNC(startRange));
 					
 					// wait until range is done to restart loop
 					waitUntil { sleep 0.5; !(_objectCtrl getVariable [QGVAR(rangeActive), false])};
@@ -165,19 +166,20 @@ switch _rangeType do {
 	// targets are killed, like an AT range
 	case "spawn" : {
 		if(isServer) then {
-			SET_VAR_G(_objectCtrl,GVAR(rangeScorePossible), count (_rangeTargets select 0));
+			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
 			
 			//initialize range scores to 0: [0,0,0,0];
 			_scores = [];
 			for "_i" from 1 to (count (_rangeTargets select 0)) do {
 				_scores pushBack 0;
 			};
-			SET_VAR_G(_objectCtrl,GVAR(rangeScores),_scores);
+			SET_RANGE_VAR(rangeScores,_scores);
+			
 			[_rangeTag,"scores"] remoteExec [QFUNC(updateUI),0];
 			
 			//begin main loop
 			while{true} do {
-				// if range reset was pressed
+				// a player has pressed the range reset
 				if(GET_VAR_D(_objectCtrl,GVAR(rangeReset),false)) then {
 					LOG_1("Resetting %1",_rangeTitle);
 					
@@ -230,7 +232,7 @@ switch _rangeType do {
 					_rangeTargets = _newRangeTargets;
 					
 					// reset score
-					SET_VAR_G(_objectCtrl,GVAR(rangeScores),_rangeScores);
+					SET_RANGE_VAR(rangeScores,_rangeScores);
 					[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
 					
 					// if qualTiers were specified and possibly used, reset those
@@ -239,9 +241,9 @@ switch _rangeType do {
 					};
 					
 					// save new targets
-					SET_VAR_G(_objectCtrl,GVAR(rangeTargets),_rangeTargets);
-					SET_VAR_G(_objectCtrl,GVAR(rangeReset),false);
-					SET_VAR_G(_objectCtrl,GVAR(rangeInteractable),true);
+					SET_RANGE_VAR(rangeTargets,_rangeTargets);
+					SET_RANGE_VAR(rangeReset,false);
+					SET_RANGE_VAR(rangeInteractable,true);
 				} else {
 					// get current range scores to compare later
 					_oldRangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
@@ -266,7 +268,7 @@ switch _rangeType do {
 					
 					// if the scores have changed, fire UI update
 					if(!(_rangeScores isEqualTo _oldRangeScores)) then {
-						SET_VAR_G(_objectCtrl,GVAR(rangeScores),_rangeScores);
+						SET_RANGE_VAR(rangeScores,_rangeScores);
 						[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
 						
 						if(!isNil "_qualTiers") then {
@@ -278,7 +280,7 @@ switch _rangeType do {
 			};
 		};
 
-		// TODO: move to initPlayer.sqf
+		// TODO: move to initPlayer.sqf?
 		_objectCtrl addAction ["Reset Range", {
 			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
 			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);

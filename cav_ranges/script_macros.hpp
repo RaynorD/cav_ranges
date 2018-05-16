@@ -195,6 +195,8 @@
 //#define ACTION_COND_NOT(var1,var2) FORMAT_2(QUOTE(!ARG_2(%1,%2,7)),var1,var2)
 
 #define GET_CTRL(var) ((findDisplay 46) displayCtrl var)
+#define SET_RANGE_VAR(var1,var2) SET_VAR_G(_objectCtrl,GVAR(var1),var2)
+#define SET_RANGE_VAR_X(var1) SET_RANGE_VAR(var1,_##var1)
 
 #define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers"]
 

@@ -11,7 +11,6 @@ class DOUBLES(PREFIX,COMPONENT) //tag
 		DEF_FUNC(updateQuals);
 		DEF_FUNC(rangeDialog);
 		DEF_FUNC(resetRangeData);
-		DEF_FUNC(resetSpawnRange);
 		DEF_FUNC(startRange);
 		DEF_FUNC(stopRange);
 		DEF_FUNC(updateUI);

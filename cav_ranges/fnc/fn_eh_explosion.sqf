@@ -29,8 +29,13 @@ Author:
 
 params [["_target",objNull],["_damage",0]];
 
+_text = format ["%1 - %2", _target, _damage];
+systemChat _text;
+LOG(_text);
+
 // ignore damage below threshold
-if(_damage < (_target getVariable [QGVAR(expDmgThreshold), missionNamespace getVariable [QGVAR(expDmgThreshold),0.025]])) exitWith {true};
+// check global, then object namespace, then default
+if(_damage < (_target getVariable [QGVAR(expDmgThreshold), missionNamespace getVariable [QGVAR(expDmgThreshold),0.005]])) exitWith {true};
 
 // lower target
 _target animate ["terc", 1]; 

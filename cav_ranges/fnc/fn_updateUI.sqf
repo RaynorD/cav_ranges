@@ -19,10 +19,7 @@ Locality:
 	(Exited on dedicated server)
 
 Examples:
-    [
-		"r1",
-		"message"
-	] spawn CAV_Ranges_fnc_updateUI;
+    ["r1","message"] spawn CAV_Ranges_fnc_updateUI;
 
 Author:
 	=7Cav=WO1.Raynor.D
