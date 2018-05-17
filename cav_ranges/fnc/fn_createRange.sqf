@@ -76,7 +76,9 @@ DEF_RANGE_PARAMS;
 
 LOG_1("CreateRange: %1",_rangeTitle);
 
-waitUntil {sleep 0.1; !isNull player}; // a stab at fixing JIP addactions
+if(hasInterface) then {
+	waitUntil {sleep 0.1; !isNull player}; // a stab at fixing JIP addactions
+};
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
 if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
@@ -137,25 +139,23 @@ if(isServer) then {
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
-		// TODO: check that works in JIP
-		if(hasInterface) then {
-			if(GET_VAR_D(player,GVAR(instructor),false)) then {
-				_objectCtrl addAction ["Start Range", {
-					SET_VAR_G((_this select 0),GVAR(rangeActive),true);
-					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-					SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-				}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-				_objectCtrl addAction ["Stop Range", {
-					//(_this select 0) setVariable [QGVAR(rangeActive),false,true];
-					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-					//(_this select 0) setVariable [QGVAR(rangeInteractable),false,true];
-					(_this select 3) remoteExec [QFUNC(cancelRange),2];
-				}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-				// reset range UI after running the course
-				_objectCtrl addAction ["Reset Range Data", {
-					(_this select 3) spawn FUNC(resetRangeData);
-				}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			};
+		// TODO: doesn't work in JIP
+		if(GET_VAR_D(player,GVAR(instructor),false)) then {
+			_objectCtrl addAction ["Start Range", {
+				SET_VAR_G((_this select 0),GVAR(rangeActive),true);
+				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+			}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+			_objectCtrl addAction ["Stop Range", {
+				//(_this select 0) setVariable [QGVAR(rangeActive),false,true];
+				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+				//(_this select 0) setVariable [QGVAR(rangeInteractable),false,true];
+				(_this select 3) remoteExec [QFUNC(cancelRange),2];
+			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+			// reset range UI after running the course
+			_objectCtrl addAction ["Reset Range Data", {
+				(_this select 3) spawn FUNC(resetRangeData);
+			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 		};
 		
 		if(isServer) then {
@@ -172,15 +172,11 @@ switch _rangeType do {
 					waitUntil { sleep 0.5; !(_objectCtrl getVariable [QGVAR(rangeActive), false])};
 				};
 			};
-			
-			
 		};
 	};
 	
 	// targets are killed, like an AT range
 	case "spawn" : {
-		// TODO: Now reset doesn't work
-		// TODO: check that works in JIP
 		_objectCtrl addAction ["Reset Range", {
 			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
 			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
@@ -188,7 +184,6 @@ switch _rangeType do {
 		
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
-
 			
 			//initialize range scores to 0: [0,0,0,0];
 			_scores = [];
@@ -196,110 +191,117 @@ switch _rangeType do {
 				_scores pushBack 0;
 			};
 			SET_RANGE_VAR(rangeScores,_scores);
-			LOG_1("rangeScores: %1",_scores);
-			
 			[_rangeTag,"scores"] remoteExec [QFUNC(updateUI),0];
 			
+			LOG_1("rangeScores: %1",_this);
 			//begin main loop
-			while{true} do {
-				// a player has pressed the range reset
-				if(GET_VAR_D(_objectCtrl,GVAR(rangeReset),false)) then {
-					LOG_1("Resetting %1",_rangeTitle);
-					
-					// first iterates to delete all targets that remain
-					{
-						_targets = _x;
-						{
-							_target = _x;
-							if(!isNil "_target") then {
-								deleteVehicle _target;
-								systemchat format ["deleting target %1",_target];
-							};
-						} foreach _targets;
-					} foreach _rangeTargets;
-					
-					// give time for vehicles to fully delete
-					sleep 2;
-					
-					// iteration to spawn new vehicles
-					_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-					_newRangeTargets = [];
-					{
-						_targets = _x;
-						_laneIndex = _forEachIndex;
-						_thisLaneData = _rangeTargetData select _laneIndex;
-						_newTargets = [];
-						{
-							_target = _x;
-							
-							// open saved target data
-							_thisTargetData = _thisLaneData select _forEachIndex;
-							_thisTargetData params ["_type","_pos","_vectorDirAndUp"];
-							
-							// create vehicle and set direction
-							_newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
-							_newTarget setVectorDirAndUp _vectorDirAndUp;
-							
-							// globalize new object as the correct name
-							_name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
-							missionNamespace setVariable [_name,_newTarget];
-							[_newTarget, _name] remoteExec ["setVehicleVarName",0,_newTarget];
-							
-							_newTargets pushBack _newTarget;
-						} foreach _targets;
+			[_this,_objectCtrl] spawn {
+				params ["_args","_objectCtrl"];
+				_args DEF_RANGE_PARAMS;
+				
+				while{true} do {
+					// a player has pressed the range reset
+					if(GET_VAR_D(_objectCtrl,GVAR(rangeReset),false)) then {
+						LOG_1("Resetting %1",_rangeTitle);
 						
-						_newRangeTargets pushBack _newTargets;
-						_rangeScores set [_forEachIndex, 0];
-					} foreach _rangeTargets;
-					
-					_rangeTargets = _newRangeTargets;
-					
-					// reset score
-					SET_RANGE_VAR(rangeScores,_rangeScores);
-					[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
-					
-					// if qualTiers were specified and possibly used, reset those
-					if(!isNil "_qualTiers") then {
-						[_this,false] spawn FUNC(updateQuals);
-					};
-					
-					// save new targets
-					SET_RANGE_VAR(rangeTargets,_rangeTargets);
-					SET_RANGE_VAR(rangeReset,false);
-					SET_RANGE_VAR(rangeInteractable,true);
-				} else {
-					// get current range scores to compare later
-					_oldRangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-					_rangeScores = [];
-					{
-						_targets = _x;
-						_laneIndex = _forEachIndex;
-						_laneScore = 0;
+						// first iterates to delete all targets that remain
+						_rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 						{
-							_target = _x;
-							// count as a kill if target is nil or dead/immobilized
-							if(isNil "_target") then {
-								_laneScore = _laneScore + 1;
-							} else {
-								if(!(alive _target) || !(canMove _target)) then {
-									_laneScore = _laneScore + 1;
+							_targets = _x;
+							{
+								_target = _x;
+								if(!isNil "_target") then {
+									deleteVehicle _target;
+									systemchat format ["deleting target %1",_target];
 								};
-							};						
-						} foreach _targets;
-						_rangeScores pushBack _laneScore;
-					} foreach _rangeTargets;
-					
-					// if the scores have changed, fire UI update
-					if(!(_rangeScores isEqualTo _oldRangeScores)) then {
+							} foreach _targets;
+						} foreach _rangeTargets;
+						
+						// give time for vehicles to fully delete
+						sleep 2;
+						
+						// iteration to spawn new vehicles
+						_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+						_rangeTargetData = GET_VAR(_objectCtrl,GVAR(rangeTargetData));
+						_newRangeTargets = [];
+						{
+							_targets = _x;
+							_laneIndex = _forEachIndex;
+							_thisLaneData = _rangeTargetData select _laneIndex;
+							_newTargets = [];
+							{
+								_target = _x;
+								
+								// open saved target data
+								_thisTargetData = _thisLaneData select _forEachIndex;
+								_thisTargetData params ["_type","_pos","_vectorDirAndUp"];
+								
+								// create vehicle and set direction
+								_newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+								_newTarget setVectorDirAndUp _vectorDirAndUp;
+								
+								// globalize new object as the correct name
+								_name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
+								missionNamespace setVariable [_name,_newTarget];
+								[_newTarget, _name] remoteExec ["setVehicleVarName",0,_newTarget];
+								
+								_newTargets pushBack _newTarget;
+							} foreach _targets;
+							
+							_newRangeTargets pushBack _newTargets;
+							_rangeScores set [_forEachIndex, 0];
+						} foreach _rangeTargets;
+						
+						_rangeTargets = _newRangeTargets;
+						
+						// reset score
 						SET_RANGE_VAR(rangeScores,_rangeScores);
 						[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
 						
+						// if qualTiers were specified and possibly used, reset those
 						if(!isNil "_qualTiers") then {
-							[_this,false] spawn FUNC(updateQuals);
+							[_args,false] spawn FUNC(updateQuals);
+						};
+						
+						// save new targets
+						SET_RANGE_VAR(rangeTargets,_rangeTargets);
+						SET_RANGE_VAR(rangeReset,false);
+						SET_RANGE_VAR(rangeInteractable,true);
+					} else {
+						// get current range scores to compare later
+						_oldRangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+						_rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
+						_rangeScores = [];
+						{
+							_targets = _x;
+							_laneIndex = _forEachIndex;
+							_laneScore = 0;
+							{
+								_target = _x;
+								// count as a kill if target is nil or dead/immobilized
+								if(isNil "_target") then {
+									_laneScore = _laneScore + 1;
+								} else {
+									if(!(alive _target) || !(canMove _target)) then {
+										_laneScore = _laneScore + 1;
+									};
+								};						
+							} foreach _targets;
+							_rangeScores pushBack _laneScore;
+						} foreach _rangeTargets;
+						
+						// if the scores have changed, fire UI update
+						if(!(_rangeScores isEqualTo _oldRangeScores)) then {
+							SET_RANGE_VAR(rangeScores,_rangeScores);
+							[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
+							
+							if(!isNil "_qualTiers") then {
+								[_args,false] spawn FUNC(updateQuals);
+							};
 						};
 					};
+					sleep 1;
 				};
-				sleep 1;
 			};
 		};
 	};
