@@ -215,7 +215,8 @@ _laneQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 			
 		};
 	};
-	systemChat _rangeDoneText;
+	LOG(_rangeDoneText);
+	[_rangeDoneText] remoteExec ["systemChat", 0];
 } foreach _rangeTargets;
 
 
