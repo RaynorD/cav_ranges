@@ -234,6 +234,16 @@ while{true} do {
 	// save idcs to control object so other functions can update their text
 	SET_VAR(_objectCtrl,GVAR(idcLanes),_laneControls);
 	
+	// set ui height based on how many lanes there were
+	_uiH = _nextLineY;
+	_uiPos = ctrlPosition _ctrlGroup;
+	_uiPos set [3, _uiH];
+	_ctrlGroup ctrlSetPosition _uiPos;
+	_ctrlGroup ctrlCommit 0;
+	_bgPos = [0,0,_uiW,_uiH];
+	_bg ctrlSetPosition _bgPos;
+	_bg ctrlCommit 0;
+
 	// start slide out animation
 	_ctrlGroup ctrlSetPosition [_uiX, _uiY, _uiW, _uiH];
 	_ctrlGroup ctrlCommit _animTime;
