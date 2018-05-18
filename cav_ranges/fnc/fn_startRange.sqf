@@ -114,6 +114,7 @@ SET_RANGE_VAR(rangeScorePossible,0);
 		_targetsRaised = [];
 		{
 			_laneTargets = _x;
+			_thisLaneRaised = [];
 			if(count _rangeGrouping == 0) then { // single target grouping
 				{
 					_target = _laneTargets select (_x - 1);
@@ -121,8 +122,9 @@ SET_RANGE_VAR(rangeScorePossible,0);
 					if(_target animationPhase "terc" != 0) then {
 						[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
 					};
-					_targetsRaised pushBack _target;
+					_thisLaneRaised pushBack _target;
 				} foreach _event;
+				
 			} else { // grouping was used TODO: Doesn't work
 				{
 					_groupTargets = _x;
@@ -132,11 +134,17 @@ SET_RANGE_VAR(rangeScorePossible,0);
 						if(_target animationPhase "terc" != 0) then {
 							[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
 						};
-						_targetsRaised pushBack _target;
+						_thisLaneRaised pushBack _target;
 					} foreach _groupTargets;
 				} foreach _event;
 			};
+			_targetsRaised pushBack _thisLaneRaised;
 		} foreach _rangeTargets;
+		
+		// update possible score
+		_targetCount = count _event;
+		_newPossible = (GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0)) + _targetCount;
+		SET_RANGE_VAR(rangeScorePossible,_newPossible);
 		
 		sleep _delay;
 		
@@ -144,6 +152,8 @@ SET_RANGE_VAR(rangeScorePossible,0);
 		_rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
 		{
 			_laneScore = (_rangeScores select _forEachIndex);
+			_thisLaneRaised = _x;
+			
 			if(isNil "_laneScore") then {_laneScore = 0};
 			{
 				_target = _x;
@@ -154,12 +164,10 @@ SET_RANGE_VAR(rangeScorePossible,0);
 				if(_target animationPhase "terc" != 1) then {
 					[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
 				};
-				// update possible score
-				SET_RANGE_VAR(rangeScorePossible,((GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0))+1));
-			} foreach _targetsRaised;
+			} foreach _thisLaneRaised;
 			_rangeScores set [_forEachIndex, _laneScore];
 			
-		} foreach _rangeTargets;
+		} foreach _targetsRaised;
 		
 		SET_RANGE_VAR(rangeScores,_rangeScores);
 		[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
