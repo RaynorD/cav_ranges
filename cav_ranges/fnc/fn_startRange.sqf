@@ -117,14 +117,20 @@ SET_RANGE_VAR(rangeScorePossible,0);
 			_thisLaneRaised = [];
 			if(count _rangeGrouping == 0) then { // single target grouping
 				{
-					_target = _laneTargets select (_x - 1);
+					_target = nil;
+					if(_target > ((count _laneTargets) - 1)) then {
+						_target = _laneTargets select (floor random ((count _laneTargets) - 1));
+						// global BIS_fnc_error
+					} else {
+						_target = _laneTargets select (_x - 1);
+					};
+
 					_target animate ["terc", 0];
 					if(_target animationPhase "terc" != 0) then {
 						[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
 					};
 					_thisLaneRaised pushBack _target;
 				} foreach _event;
-				
 			} else { // grouping was used TODO: Doesn't work
 				{
 					_groupTargets = _x;
