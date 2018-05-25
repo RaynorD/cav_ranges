@@ -10,12 +10,12 @@
 //	_x setVariable ["cav_ranges_expDmgThreshold",0.001];
 //} foreach allMissionObjects "TargetP_Inf3_F";
 //
-//// grenade range
-//{
-//	_x addEventHandler ["Explosion", {_this spawn cav_ranges_fnc_eh_explosion}];
-//	_x addEventHandler ["HandleDamage", {0}];
-//	_x setVariable ["cav_ranges_expDmgThreshold",0.04];
-//} foreach allMissionObjects "TargetP_Inf2_F";
+// grenade range
+{
+	_x addEventHandler ["Explosion", {_this spawn cav_ranges_fnc_eh_explosion}];
+	_x addEventHandler ["HandleDamage", {0}];
+	_x setVariable ["cav_ranges_expDmgThreshold",0.02];
+} foreach allMissionObjects "TargetP_Inf_F";
 
 [
 	"targets", 		//range type
@@ -84,5 +84,26 @@
 	[38,30,23]	// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
 				//   values below the last element will show no go
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
+] spawn cav_ranges_fnc_createRange;
+
+[
+	"targets", 		//range type
+	"Grenade Range",	// title text
+	"gr",			// range tag
+	1,				// lane count
+	8,				// targets per lane
+	[				
+		// Range sequence
+		["Ready your grenades",5],
+		["Range is hot!",1],
+		[[1],5],
+		[[2,3],5],
+		[[4],5],
+		[[5,6],5],
+		[[7,8],5],
+		["Range complete.",0]
+	],
+	nil,	// target grouping
+	[8,6,5]	// qualification tiers
 ] spawn cav_ranges_fnc_createRange;
 
