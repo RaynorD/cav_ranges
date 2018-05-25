@@ -51,14 +51,16 @@ if(isNil "_rangeTargets") exitWith {NIL_ERROR(_rangeTargets)};
 _rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
 if(isNil "_rangeScores") exitWith {NIL_ERROR(_rangeScores)};
 
+if(isNil "_qualTiers") exitWith {LOG_1("%1 qualTiers is nil", _rangeTitle)};
+
 // return qualification tier, need to make this scalable
 _rangeScoreQuals = [];
 {
 	if((count _rangeScores) > _forEachIndex) then {
 		_score = _rangeScores select _forEachIndex;
 		if(!isNil "_score") then {
+			_qual = -1;
 			if(_score > 0) then {
-				_qual = -1;
 				if(count _qualTiers >= 1) then {
 					if(_score >= _qualTiers select 0) then {
 						_qual = 0;
