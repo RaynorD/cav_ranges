@@ -194,10 +194,12 @@ switch (_element) do {
 					if(!isNil "_shooterPlayers") then {
 						LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
 						if(typeName _shooterPlayers != "ARRAY") then {TYPE_ERROR_INDEX(_shooterPlayers)} else {
-							_shooter = _shooterPlayers select _forEachIndex;
-							if(!isNil "_shooter") then {
-								if(typeName _shooterText != "STRING") then {TYPE_ERROR_INDEX(_shooterText)} else {
-									_shooterText = name _shooter;
+							if(count _shooterPlayers > _forEachIndex) then {
+								_shooter = _shooterPlayers select _forEachIndex;
+								if(!isNil "_shooter") then {
+									if(typeName _shooterText != "STRING") then {TYPE_ERROR_INDEX(_shooterText)} else {
+										_shooterText = name _shooter;
+									};
 								};
 							};
 						};
