@@ -1,3 +1,4 @@
+
 class cfgFunctions
 {
 	#include "cav_ranges\cfgFunctions.hpp"
