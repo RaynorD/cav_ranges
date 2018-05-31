@@ -1,5 +1,5 @@
-### Cav_ranges is a modular framework for practice target ranges in Arma 3.
-It allows you to setup a feature complete target range in just a few minutes.
+# cav_ranges
+This modular framework allows rapid setup and configuration of fully featured practice target ranges in Arma 3.
 
 ![range](https://i.imgur.com/P0WqD4Y.png)
 
@@ -15,7 +15,7 @@ Current modules:
 The common framework allows fast integration of new modules with completely different functionality, of which several are in development.
 
 ### Easy configuration
-After some quick editor setup, all configuration is done via one function to create each range.
+After some quick editor setup, all configuration is done via one function's arguments at mission init.
 
 ```
   "targets", //range type
@@ -44,3 +44,6 @@ Popup ranges become trivial to control. A minimal syntax of "what and how long" 
 A fully featured display shows real time information about the range, including range messages, who's shooting and their score, and qualification awards once the range is complete.  
 
 ![range ui](https://i.imgur.com/R9RI2if.png)
+
+## Setup Guide
+For detailed setup instructions, please see the [wiki](https://github.com/RaynorD/cav_ranges/wiki/Design-Your-Range-(createRange)).
