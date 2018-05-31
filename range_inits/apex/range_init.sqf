@@ -81,9 +81,10 @@
 	
 	nil,	// target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
 				//   a particular target can be in multiple groups
-	[38,30,23]	// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
+	[38,30,23],	// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
 				//   values below the last element will show no go
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
+	true
 ] spawn cav_ranges_fnc_createRange;
 
 [

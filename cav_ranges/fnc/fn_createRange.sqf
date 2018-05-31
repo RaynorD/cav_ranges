@@ -15,6 +15,7 @@ Parameters:
 	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
 	Grouping - target groupings [Array of Arrays of Numbers]
 	Qualification Tiers - number of targets to attain each qual [Array of Integers]
+	Add Instructor Actions - whether to add player-bound actions to start/stop range [Boolean]
 
 Returns: 
 	Nothing
@@ -57,9 +58,10 @@ Examples:
 		],
 		nil,							// target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
 										//     a particular target can be in multiple groups
-		[13,11,9]						// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
+		[13,11,9],						// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
 										//     values below the last element will show no go
 										//     Not all three are required, [35] would simply return expert above 35, and no go below that
+		true							// add instructor actions
 	] spawn cav_ranges_fnc_createRange;
 
 Author:
@@ -147,9 +149,7 @@ switch _rangeType do {
 				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
 			}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 			_objectCtrl addAction ["Stop Range", {
-				//(_this select 0) setVariable [QGVAR(rangeActive),false,true];
 				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-				//(_this select 0) setVariable [QGVAR(rangeInteractable),false,true];
 				(_this select 3) remoteExec [QFUNC(cancelRange),2];
 			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 			// reset range UI after running the course
@@ -157,29 +157,68 @@ switch _rangeType do {
 				(_this select 3) spawn FUNC(resetRangeData);
 			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 			
-			if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
-				systemChat "adding range actions";
-				SET_VAR(player,GVAR(rangeControlsAdded),true);
-				player addAction [
-					"<t color='#00ff00'>Open Range Controls</t>",
-					{player setVariable [QGVAR(showRangeActions),true]},
-					nil,
-					0,
-					false,
-					false,
-					"",
-					"!(player getVariable ['Cav_showRangeActions',false])"
-				];
+			if(_addInstructorActions) then {
+				if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
+					systemChat "adding range actions";
+					SET_VAR(player,GVAR(rangeControlsAdded),true);
+					player addAction [
+						"<t color='#00ff00'>Open Range Controls</t>",
+						{
+							player setVariable ['Cav_showRangeActions',true];
+							systemChat "Open Range Controls";
+						},
+						nil,
+						0,
+						false,
+						false,
+						"",
+						"!(player getVariable ['Cav_showRangeActions',false])"
+					];
+					
+					player addAction [
+						"<t color='#ff0000'>Collapse Range Controls</t>",
+						{
+							player setVariable ['Cav_showRangeActions',false];
+							systemChat "Closing Range Controls";
+						},
+						nil,
+						250,
+						false,
+						true,
+						"",
+						"(player getVariable ['Cav_showRangeActions',false])"
+					];
+				};
 				
+				_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
+				_currentActionPriority = _currentActionPriority - 1;
 				player addAction [
-					"<t color='#ff0000'>Collapse Range Controls</t>",
-					{player setVariable [QGVAR(showRangeActions),false]},
-					nil,
-					250,
+					format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
+					{
+						SET_VAR_G((_this select 3),GVAR(rangeActive),true);
+						SET_VAR_G((_this select 3),GVAR(rangeActivator),(_this select 1));
+						SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
+					},
+					_objectCtrl,
+					_currentActionPriority,
 					false,
 					true,
 					"",
-					"(player getVariable ['Cav_showRangeActions',false])"
+					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)]
+				];
+				
+				player addAction [
+					format ["<t color='#ff0000'>    %1 - Stop</t>",_rangeTitle],
+					{
+						SET_VAR_G(((_this select 3) select 0),GVAR(rangeActivator),(_this select 1));
+						((_this select 3) select 1) remoteExec [QFUNC(cancelRange),2];
+					},
+					[_objectCtrl,_this],
+					_currentActionPriority,
+					false,
+					true,
+					"",
+					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)]
 				];
 			};
 		};
