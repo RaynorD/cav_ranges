@@ -91,7 +91,7 @@
 	"targets", 		//range type
 	"Grenade Range",	// title text
 	"gr",			// range tag
-	1,				// lane count
+	4,				// lane count
 	8,				// targets per lane
 	[				
 		// Range sequence
