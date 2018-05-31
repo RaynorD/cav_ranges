@@ -156,6 +156,32 @@ switch _rangeType do {
 			_objectCtrl addAction ["Reset Range Data", {
 				(_this select 3) spawn FUNC(resetRangeData);
 			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+			
+			if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
+				systemChat "adding range actions";
+				SET_VAR(player,GVAR(rangeControlsAdded),true);
+				player addAction [
+					"<t color='#00ff00'>Open Range Controls</t>",
+					{player setVariable [QGVAR(showRangeActions),true]},
+					nil,
+					0,
+					false,
+					false,
+					"",
+					"!(player getVariable ['Cav_showRangeActions',false])"
+				];
+				
+				player addAction [
+					"<t color='#ff0000'>Collapse Range Controls</t>",
+					{player setVariable [QGVAR(showRangeActions),false]},
+					nil,
+					250,
+					false,
+					true,
+					"",
+					"(player getVariable ['Cav_showRangeActions',false])"
+				];
+			};
 		};
 		
 		if(isServer) then {
