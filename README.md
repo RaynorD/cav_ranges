@@ -1,6 +1,5 @@
-Welcome to the cav_ranges wiki!
-
-Cav_ranges is a modular framework for practice target ranges in Arma 3. It allows you to setup a feature complete target range in just a few minutes.
+### Cav_ranges is a modular framework for practice target ranges in Arma 3.
+It allows you to setup a feature complete target range in just a few minutes.
 
 ![range](https://i.imgur.com/P0WqD4Y.png)
 
