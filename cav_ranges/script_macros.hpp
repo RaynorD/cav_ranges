@@ -5,16 +5,18 @@
 #define PROJECT_VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define PROJECT_VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
 
+#define PROJECT DOUBLES(PREFIX,COMPONENT)
+
 #define DOUBLES(var1,var2) ##var1##_##var2
 #define TRIPLES(var1,var2,var3) ##var1##_##var2##_##var3
 #define QUOTE(var1) #var1
 #define QQUOTE(var1) QUOTE(QUOTE(var1))
 
-#define GVAR(var1) DOUBLES(DOUBLES(PREFIX,COMPONENT),var1)
+#define GVAR(var1) DOUBLES(PROJECT,var1)
 #define QGVAR(var1) QUOTE(GVAR(var1))
 #define QQGVAR(var1) QUOTE(QGVAR(var1))
 
-#define FUNC(var1) TRIPLES(DOUBLES(PREFIX,COMPONENT),fnc,var1)
+#define FUNC(var1) TRIPLES(PROJECT,fnc,var1)
 #define QFUNC(var1) QUOTE(FUNC(var1))
 
 #define FUNC_1(var1,var2) [var2] call FUNC(var1)
@@ -127,7 +129,7 @@
 
 #endif
 
-#define ERROR(MESSAGE) LOG_SYS_FILELINENUMBERS('ERROR',MESSAGE)
+#define ERROR(MESSAGE) LOG_SYS_FILELINENUMBERS('ERROR',MESSAGE); [LOG_SYS_FORMAT('ERROR',MESSAGE)] call BIS_fnc_error
 #define ERROR_1(MESSAGE,ARG1) ERROR(FORMAT_1(MESSAGE,ARG1))
 #define ERROR_2(MESSAGE,ARG1,ARG2) ERROR(FORMAT_2(MESSAGE,ARG1,ARG2))
 #define ERROR_3(MESSAGE,ARG1,ARG2,ARG3) ERROR(FORMAT_3(MESSAGE,ARG1,ARG2,ARG3))
@@ -151,9 +153,8 @@
 
 /* Start custom macros */
 
-#define SCRIPT_FOLDER DOUBLES(PREFIX,COMPONENT)
-#define SCRIPT(var1) SCRIPT_FOLDER\fnc\fn_##var1##.sqf
-#define IMAGE(var1) SCRIPT_FOLDER\data\##var1##.paa
+#define SCRIPT(var1) PROJECT\fnc\fn_##var1##.sqf
+#define IMAGE(var1) PROJECT\data\##var1##.paa
 
 #define SYSCHAT_VAR(var) systemChat FORMAT_1(QUOTE(var: %1),var)
 #define LOG_VAR(var) LOG_1((QUOTE(var: %1),var)
