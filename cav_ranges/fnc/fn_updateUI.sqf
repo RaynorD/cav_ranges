@@ -32,8 +32,7 @@ disableSerialization;
 
 if(!hasInterface) exitWith {};
 
-// TODO: Don't think data is needed
-params ["_rangeTag","_element",["_data",nil]];
+params ["_rangeTag","_element",["_showNoGo",true]];
 
 //SYSCHAT_VAR(_this);
 
@@ -112,15 +111,19 @@ switch (_element) do {
 	case "scores" : {
 		_scorePossible = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
+		_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+		if(!isNil "_rangeScores") then {
+			LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
+		};
+		
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			{
 				_idcScore = _x select 1;
 				if(isNil "_idcScore") then {NIL_ERROR_INDEX(_idcScore)} else {
 					_scoreText = ["-","-"];
-					
-					_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+
 					if(!isNil "_rangeScores") then {
-						LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
+						
 						if(typeName _rangeScores != "ARRAY") then {TYPE_ERROR_INDEX(_rangeScores)} else {
 							_score = _rangeScores select _forEachIndex;
 							if(typeName _score != "SCALAR") then {TYPE_ERROR_INDEX(_score)} else {
@@ -148,24 +151,46 @@ switch (_element) do {
 	case "qual" : {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
+			_rangeScoreQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
+			_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
+			if(!isNil "_rangeScoreQuals") then {
+				LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
+			};
+			
 			{
 				_idcQual = _x select 2;
 				if(isNil "_idcQual") then {NIL_ERROR_INDEX(_idcQual)} else {
 					_qualText = ["",""];
-					
-					_rangeScoreQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
-					
 					if(!isNil "_rangeScoreQuals") then {
-						LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
-						_laneQual = _rangeScoreQuals select _forEachIndex;
-						
-						if(!isNil "_laneQual") then {
-							if(typeName _laneQual != "SCALAR") then {TYPE_ERROR_INDEX(_laneQual)} else {
-								if(_laneQual >= count GVAR(scoreTiers)) then {BOUNDS_ERROR_INDEX(GVAR(scoreTiers),_laneQual)} else {
-									if(_laneQual >= 0) then {
-										_qualText = GVAR(scoreTiers) select _laneQual;
-									} else {
-										_qualText = ["NG",QUOTE(IMAGE(nogo))];
+						if(count _rangeScoreQuals > _forEachIndex) then {
+							_laneQual = _rangeScoreQuals select _forEachIndex;
+							
+							if(!isNil "_laneQual") then {
+								if(typeName _laneQual != "SCALAR") then {TYPE_ERROR_INDEX(_laneQual)} else {
+									if(_laneQual >= count GVAR(scoreTiers)) then {BOUNDS_ERROR_INDEX(GVAR(scoreTiers),_laneQual)} else {
+										if(_laneQual >= 0) then {
+											_qualText = GVAR(scoreTiers) select _laneQual;
+										} else {
+											if(count _rangeScores > _forEachIndex) then {
+												_showScore = false;
+												
+												if(count _shooterPlayers > _forEachIndex) then {
+													_shooter = _shooterPlayers select _forEachIndex;
+													if(!isNil "_shooter") then {
+														_showScore = true;
+													};
+												};
+												
+												if(_rangeScores select _forEachIndex > 0 && _showNoGo) then {
+													_showScore = true;
+												};
+												
+												if(_showScore) then {
+													_qualText = ["NG",QUOTE(IMAGE(nogo))];
+												};
+											};
+										};
 									};
 								};
 							};
@@ -185,33 +210,36 @@ switch (_element) do {
 	case "shooter" : {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
-			{
-				_idcShooter = _x select 3;
-				if(isNil "_idcShooter") then {NIL_ERROR_INDEX(_idcShooter)} else {
-					_shooterText = "";
-					
-					_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
-					if(!isNil "_shooterPlayers") then {
-						LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
-						if(typeName _shooterPlayers != "ARRAY") then {TYPE_ERROR_INDEX(_shooterPlayers)} else {
-							if(count _shooterPlayers > _forEachIndex) then {
-								_shooter = _shooterPlayers select _forEachIndex;
-								if(!isNil "_shooter") then {
-									if(typeName _shooterText != "STRING") then {TYPE_ERROR_INDEX(_shooterText)} else {
-										_shooterText = name _shooter;
+			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
+			LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
+			
+			if(!isNil "_shooterPlayers") then {
+				{
+					_idcShooter = _x select 3;
+					if(isNil "_idcShooter") then {NIL_ERROR_INDEX(_idcShooter)} else {
+						_shooterText = "";
+
+						if(!isNil "_shooterPlayers") then {
+							if(typeName _shooterPlayers != "ARRAY") then {TYPE_ERROR_INDEX(_shooterPlayers)} else {
+								if(count _shooterPlayers > _forEachIndex) then {
+									_shooter = _shooterPlayers select _forEachIndex;
+									if(!isNil "_shooter") then {
+										if(typeName _shooterText != "STRING") then {TYPE_ERROR_INDEX(_shooterText)} else {
+											_shooterText = name _shooter;
+										};
 									};
 								};
 							};
 						};
+						
+						GET_CTRL(_idcShooter) ctrlSetStructuredText parseText format [
+							"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
+							_vertTxtPad, 
+							_shooterText
+						];
 					};
-					
-					GET_CTRL(_idcShooter) ctrlSetStructuredText parseText format [
-						"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
-						_vertTxtPad, 
-						_shooterText
-					];
-				};
-			} foreach _idcLanes;
+				} foreach _idcLanes;
+			};
 		};
 	};
 };

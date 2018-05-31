@@ -207,34 +207,39 @@ _possibleScore = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 _shooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
 _laneQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 { 
+	_score = _rangeScores select _forEachIndex;
 	
-	_rangeDoneText = format ["%1 - Lane %2: %3/%4", _rangeTitle, _forEachIndex + 1, _rangeScores select _forEachIndex, _possibleScore];
-	
-	if(!isNil "_laneQuals") then {
-		if(count _laneQuals > _forEachIndex) then {
-			_laneQual = _laneQuals select _forEachIndex;
-			if(!isNil "_laneQual") then {
-				_qualText = "No Go";
-				if(_laneQual >= 0) then {
-					_qualText = ((GVAR(scoreTiers) select _laneQual) select 2);
-				};
-
-				_rangeDoneText = _rangeDoneText + format [" (%1)",_qualText];
-			};	
-		};
-	};
-	
+	_shooter = nil;
 	if(!isNil "_shooters") then {
 		if(count _shooters > _forEachIndex) then {
 			_shooter = _shooters select _forEachIndex;
-			if(!isNil "_shooter") then {
-				_rangeDoneText = _rangeDoneText + format [" - Shooter: %1", name _shooter];
-			};
-			
 		};
 	};
-	LOG(_rangeDoneText);
-	[_rangeDoneText] remoteExec ["systemChat", 0];
+	
+	if(_score > 0 || !isNil "_shooter") then {
+		_rangeDoneText = format ["%1 - Lane %2: %3/%4", _rangeTitle, _forEachIndex + 1, _score, _possibleScore];
+		
+		if(!isNil "_laneQuals") then {
+			if(count _laneQuals > _forEachIndex) then {
+				_laneQual = _laneQuals select _forEachIndex;
+				if(!isNil "_laneQual") then {
+					_qualText = "No Go";
+					if(_laneQual >= 0) then {
+						_qualText = ((GVAR(scoreTiers) select _laneQual) select 2);
+					};
+
+					_rangeDoneText = _rangeDoneText + format [" (%1)",_qualText];
+				};	
+			};
+		};
+		
+		if(!isNil "_shooter") then {
+			_rangeDoneText = _rangeDoneText + format [" - Shooter: %1", name _shooter];
+		};
+		
+		LOG(_rangeDoneText);
+		[_rangeDoneText] remoteExec ["systemChat", 0];
+	};
 } foreach _rangeTargets;
 
 

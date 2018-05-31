@@ -61,32 +61,16 @@ _rangeScoreQuals = [];
 		if(!isNil "_score") then {
 			_qual = -1;
 			if(_score > 0) then {
-				if(count _qualTiers >= 1) then {
-					if(_score >= _qualTiers select 0) then {
-						_qual = 0;
-					} else {
-						if(count _qualTiers >= 2) then {
-							if(_score >= _qualTiers select 1) then {
-								_qual = 1;
-							} else {
-								if(count _qualTiers >= 3) then {
-									if(_score >= _qualTiers select 2) then {
-										_qual = 2;
-									};
-								};
-							};
-						};
-					};
-				};
+				// [4,3,2]
+				{
+					if(_score >= _x) exitWith {_qual = _forEachIndex};
+				} foreach _qualTiers;
 			};
 			
-			if(!(_qual == -1 && !_showNoGo)) then {
-				_rangeScoreQuals set [_forEachIndex, _qual];
-			};
-
+			_rangeScoreQuals set [_forEachIndex, _qual];
 		};
 	};
 } foreach _rangeTargets;
 
 SET_RANGE_VAR(rangeScoreQuals,_rangeScoreQuals);
-[_rangeTag, "qual"] remoteExec [QFUNC(updateUI),0];
+[_rangeTag, "qual", _showNoGo] remoteExec [QFUNC(updateUI),0];
