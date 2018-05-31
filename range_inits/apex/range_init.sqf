@@ -14,7 +14,7 @@
 {
 	_x addEventHandler ["Explosion", {_this spawn cav_ranges_fnc_eh_explosion}];
 	_x addEventHandler ["HandleDamage", {0}];
-	_x setVariable ["cav_ranges_expDmgThreshold",0.02];
+	_x setVariable ["cav_ranges_expDmgThreshold",0.01];
 } foreach allMissionObjects "TargetP_Inf_F";
 
 [
@@ -96,11 +96,11 @@
 		// Range sequence
 		["Ready your grenades",5],
 		["Range is hot!",1],
-		[[1],5],
-		[[2,3],5],
-		[[4],5],
-		[[5,6],5],
-		[[7,8],5],
+		[[1],15],
+		[[2,3],15],
+		[[4],15],
+		[[5,6],15],
+		[[7,8],15],
 		["Range complete.",0]
 	],
 	nil,	// target grouping
