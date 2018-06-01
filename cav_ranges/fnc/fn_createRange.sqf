@@ -114,7 +114,12 @@ for "_i" from 1 to _laneCount do {
 		
 		if(_rangeType == "spawn") then {
 			_laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
-			// [classname, position, vectorDirAndUp]
+		} else {
+			if(isServer) then {
+				if(_target isKindOf "TargetP_Inf_F" && _useCustomTexture) then {
+					_target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+				};
+			};
 		};
 	};
 	if(_rangeType == "spawn") then {
