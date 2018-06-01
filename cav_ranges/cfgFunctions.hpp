@@ -8,6 +8,7 @@ class DOUBLES(PREFIX,COMPONENT) //tag
 		DEF_FUNC(cancelRange);
 		DEF_FUNC(createRange);
 		DEF_FUNC(eh_explosion);
+		DEF_FUNC(playRangeSound);
 		DEF_FUNC(updateQuals);
 		DEF_FUNC(rangeDialog);
 		DEF_FUNC(resetRangeData);
