@@ -31,10 +31,12 @@
 			//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
 			//		STRING: Message to show on the lane UI. Third element is not used in this case
 			// Second element: seconds length/delay for that event
-			// Third element (optional): delay between end of this event and start of the next, default 2 if not present
-		["Load your magazine",5],
-		["Assume a prone position and standby",3],
-		["Range is hot!",1],
+			// Third element (optional): Sound to play out of range speakers
+			// Fourth element (optional): delay between end of this event and start of the next, default 2 if not present
+		["Load one 20 round magazine",5,"Reload"],
+		["Assume a prone position and scan your lane",3,"Prone2"],
+		["Range is hot!",1,"RangeIsHot"],
+		["Range is hot!",0,"FD_Course_Active_F",0],
 		[[1],5],
 		[[2],5],
 		[[6],5],
@@ -50,9 +52,10 @@
 		[[7,3],8],
 		[[3,6],8],
 		[[2,5],8],
-		["Reload your weapon",5],
-		["Assume a prone position and standby",3],
-		["Range is hot!",1],
+		["Reload one 20 round magazine",5,"Reload"],
+		["Assume a prone position and scan your lane",3,"Prone1"],
+		["Range is hot!",1,"RangeIsHot"],
+		["Range is hot!",0,"FD_Course_Active_F",0],
 		[[5],5],
 		[[2],5],
 		[[7],5],
@@ -63,8 +66,8 @@
 		[[6],5],
 		[[3],5],
 		[[2],5],
-		["Assume a kneeling position and standby",3],
-		["Range is hot!",1],
+		["Assume a kneeling position and scan your lane",3,"Kneel"],
+		["Range is hot!",1,"RangeIsHot"],
 		[[1],5],
 		[[3],5],
 		[[4],5],
@@ -75,7 +78,8 @@
 		[[1],5],
 		[[3],5],
 		[[2],5],
-		["Safe your weapon.",3],
+		["Cease Fire!",3,"CeaseFire1"],
+		["Standby for final score...",1,"StandbyScore"],
 		["Range complete.",0]
 	],
 	
@@ -84,7 +88,8 @@
 	[38,30,23],	// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
 				//   values below the last element will show no go
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
-	true
+	true,	// add player actions
+	true	// use custom black texture 
 ] spawn cav_ranges_fnc_createRange;
 
 [
@@ -105,6 +110,7 @@
 		["Range complete.",0]
 	],
 	nil,	// target grouping
-	[8,6,5]	// qualification tiers
+	[8,6,5],	// qualification tiers
+	true
 ] spawn cav_ranges_fnc_createRange;
 
