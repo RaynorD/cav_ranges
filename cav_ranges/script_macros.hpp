@@ -199,7 +199,7 @@
 #define SET_RANGE_VAR(var1,var2) SET_VAR_G(_objectCtrl,GVAR(var1),var2)
 #define SET_RANGE_VAR_X(var1) SET_RANGE_VAR(var1,_##var1)
 
-#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false]]
+#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false],["_useCustomTexture",false]]
 
 #ifdef DEBUG_MODE
 	#define LOG_VAR(var1) LOG_2("%1: %2",QUOTE(var1),var1)
