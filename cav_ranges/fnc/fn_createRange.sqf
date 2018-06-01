@@ -144,10 +144,36 @@ if(isServer) then {
 	_this spawn FUNC(watchCurrentShooter);
 };
 
+if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
+	if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
+		SET_VAR(player,GVAR(rangeControlsAdded),true);
+		player addAction [
+			"<t color='#00ff00'>Open Range Controls</t>",
+			{player setVariable ['Cav_showRangeActions',true]},
+			nil,
+			0,
+			false,
+			false,
+			"",
+			"!(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
+		];
+		
+		player addAction [
+			"<t color='#ff0000'>Collapse Range Controls</t>",
+			{player setVariable ['Cav_showRangeActions',false]},
+			nil,
+			250,
+			false,
+			true,
+			"",
+			"(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
+		];
+	};
+};
+
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
-		// TODO: doesn't work in JIP
 		if(GET_VAR_D(player,GVAR(instructor),false)) then {
 			_objectCtrl addAction ["Start Range", {
 				SET_VAR_G((_this select 0),GVAR(rangeActive),true);
@@ -164,40 +190,9 @@ switch _rangeType do {
 			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 			
 			if(_addInstructorActions) then {
-				if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
-					systemChat "adding range actions";
-					SET_VAR(player,GVAR(rangeControlsAdded),true);
-					player addAction [
-						"<t color='#00ff00'>Open Range Controls</t>",
-						{
-							player setVariable ['Cav_showRangeActions',true];
-							systemChat "Open Range Controls";
-						},
-						nil,
-						0,
-						false,
-						false,
-						"",
-						"!(player getVariable ['Cav_showRangeActions',false])"
-					];
-					
-					player addAction [
-						"<t color='#ff0000'>Collapse Range Controls</t>",
-						{
-							player setVariable ['Cav_showRangeActions',false];
-							systemChat "Closing Range Controls";
-						},
-						nil,
-						250,
-						false,
-						true,
-						"",
-						"(player getVariable ['Cav_showRangeActions',false])"
-					];
-				};
-				
 				_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
 				_currentActionPriority = _currentActionPriority - 1;
+				
 				player addAction [
 					format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
 					{
@@ -210,7 +205,7 @@ switch _rangeType do {
 					false,
 					true,
 					"",
-					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)]
+					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
 				];
 				
 				player addAction [
@@ -224,8 +219,10 @@ switch _rangeType do {
 					false,
 					true,
 					"",
-					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)]
+					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
 				];
+				
+				SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
 			};
 		};
 		
