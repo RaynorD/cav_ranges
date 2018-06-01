@@ -101,9 +101,14 @@ SET_RANGE_VAR(rangeScorePossible,0);
 
 // start range sequence
 {
-	_x params [["_event","Standby..."],["_delay",5],["_delay2",2]];
+	_x params [["_event","Standby..."],["_delay",5],"_sound",["_delay2",2]];
 	INFO_2("%1 event: %2", _rangeTitle, _x);
 	_handled = false;
+	
+	if(!isNil "_sound") then {
+		[_rangeTag, _sound] spawn FUNC(playRangeSound);
+	};
+	
 	if(typeName _event == "STRING") then { // range message, show message and progress bar
 		SET_RANGE_VAR(rangeMessage,_x);
 		[_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
