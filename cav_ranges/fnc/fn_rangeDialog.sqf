@@ -217,13 +217,15 @@ while{true} do {
 		
 		_shooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
 		if(!isNil "_shooters") then {
-			_shooter = _shooters select _forEachIndex;
-			if(!isNil "_shooter") then {
-				_txtShooter ctrlSetStructuredText parseText format [
-					"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
-					_vertTxtPad, 
-					_shooter
-				];
+			if(count _shooters > _forEachIndex) then {
+				_shooter = _shooters select _forEachIndex;
+				if(!isNil "_shooter") then {
+					_txtShooter ctrlSetStructuredText parseText format [
+						"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
+						_vertTxtPad, 
+						_shooter
+					];
+				};
 			};
 		};
 		
