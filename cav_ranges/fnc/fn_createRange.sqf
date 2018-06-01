@@ -61,7 +61,8 @@ Examples:
 		[13,11,9],						// qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
 										//     values below the last element will show no go
 										//     Not all three are required, [35] would simply return expert above 35, and no go below that
-		true							// add instructor actions
+		true,							// add instructor actions
+		true, 							// use custom black target texture
 	] spawn cav_ranges_fnc_createRange;
 
 Author:
