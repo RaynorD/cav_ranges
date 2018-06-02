@@ -33,7 +33,7 @@ Popup ranges become trivial to control. A minimal syntax of "what and how long" 
 ```
   ["Load your magazine",5],
   ["Assume a prone position and standby",3],
-  ["Range is hot!",1,"RangeIsHot"], // play "RangeIsHot" sound from CfgSounds
+  ["Range is hot!",1,"FD_Course_Active_F"], // play "FD_Course_Active_F" sound
   [[8],5],
   [[2],5],
   [[6,4],5],
