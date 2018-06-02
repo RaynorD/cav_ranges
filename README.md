@@ -17,7 +17,7 @@ The common framework allows fast integration of new modules with completely diff
 ### Easy configuration
 After some quick editor setup, all configuration is done via one function's arguments at mission init.
 
-```
+```sqf
   "targets", //range type
   "Rifle Range", // title text
   "r2", // range tag
@@ -30,7 +30,7 @@ After some quick editor setup, all configuration is done via one function's argu
 ### Automated Range Sequencing  
 Popup ranges become trivial to control. A minimal syntax of "what and how long" is all that's needed, but further control is offered, like playing sounds through range loudspeakers.  
 
-```
+```sqf
   ["Load your magazine",5],
   ["Assume a prone position and standby",3],
   ["Range is hot!",1,"FD_Course_Active_F"], // play "FD_Course_Active_F" sound
