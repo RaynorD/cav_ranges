@@ -1,18 +1,18 @@
 # cav_ranges
-This modular framework allows rapid setup and configuration of fully featured practice target ranges in Arma 3.
+This modular framework allows rapid setup and configuration of multiple, fully featured practice target ranges in Arma 3.
 
 ![range](https://i.imgur.com/P0WqD4Y.png)
 
 ## Features
 
-### Fully Modular Framework
-Modular design allows multiple types of ranges to be configured and operated with common functionality.  
+### Modular
+Modular design allows ranges with differing core behavior to function within a common framework.  
 
 Current modules:
-* **Popup Targets** - Animated targets are controlled via the scripts for traditional target ranges like rifle, pistol, and even grenade ranges.
-* **Spawned Targets** - Targets are destroyed by the shooter and respawn, for example in an anti-tank range.
+* **Popup Target Range** - Animated targets are controlled via the scripts for traditional target ranges like rifle, pistol, and even grenade ranges.
+* **Spawned Target Range** - Targets are destroyed by the shooter and respawn, for example in an anti-tank range.
 
-The common framework allows fast integration of new modules with completely different functionality, of which several are in development.
+The common framework allows fast integration of new modules with completely different functionality, several of which are in development.
 
 ### Easy configuration
 After some quick editor setup, all configuration is done via one function's arguments at mission init.
@@ -41,7 +41,7 @@ Popup ranges become trivial to control. A minimal syntax of "what and how long" 
 ```
 
 ### Range User Interface
-A fully featured display shows real time information about the range, including range messages, who's shooting and their score, and qualification awards once the range is complete.  
+A real time display shows information about the range, including range instructions, who's shooting and their score, and qualification awards once the range is complete.  
 
 ![range ui](https://i.imgur.com/R9RI2if.png)
 
