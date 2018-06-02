@@ -1,5 +1,6 @@
 # cav_ranges
-This modular framework allows rapid setup and configuration of multiple, fully featured practice target ranges in Arma 3.
+This modular framework allows rapid setup and configuration of multiple, fully featured practice target ranges in Arma 3.  
+For detailed setup instructions, please see the [wiki](https://github.com/RaynorD/cav_ranges/wiki/Design-Your-Range-(createRange)).
 
 ![range](https://i.imgur.com/P0WqD4Y.png)
 
@@ -45,5 +46,4 @@ A real time display shows information about the range, including range instructi
 
 ![range ui](https://i.imgur.com/R9RI2if.png)
 
-## Setup Guide
-For detailed setup instructions, please see the [wiki](https://github.com/RaynorD/cav_ranges/wiki/Design-Your-Range-(createRange)).
+
