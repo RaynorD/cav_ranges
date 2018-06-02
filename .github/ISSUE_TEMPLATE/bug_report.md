@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Before submitting a bug report, please read [Troubleshooting](https://github.com/RaynorD/cav_ranges/wiki/Troubleshooting).
+about: Before submitting a bug report, PLEASE go over the wiki article on troubleshooting.
 
 ---
 
