@@ -20,16 +20,14 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Versions (please complete the following information):**
+ - Cav_ranges Version: [e.g. 2.0.0]
+ - Arma 3 Version: [e.g. 1.62]
+ - Other mods running: [e.g. CBA, ACE3]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Rpt file:**
+Please upload your .rpt file to a hosting site like Pastebin.com, and copy and paste the link here.
+If the framework was running on a dedicated server, I need the server's rpt file.
 
 **Additional context**
 Add any other context about the problem here.
