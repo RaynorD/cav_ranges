@@ -25,6 +25,9 @@ If applicable, add screenshots to help explain your problem.
  - Arma 3 Version: [e.g. 1.62]
  - Other mods running: [e.g. CBA, ACE3]
 
+**createRange call**
+If any, copy and paste what you have so far for your createRange function call.
+
 **Rpt file:**
 Please upload your .rpt file to a hosting site like Pastebin.com, and copy and paste the link here.
 If the framework was running on a dedicated server, I need the server's rpt file.
