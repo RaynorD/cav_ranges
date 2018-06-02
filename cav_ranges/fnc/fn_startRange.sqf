@@ -81,7 +81,7 @@ while{true} do {
 		_target = _x;	
 		_target setVariable ["nopop", true, true];
 		_target animate ["terc",1];
-		[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+		[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
 	} foreach _laneTargets;
 	_rangeScores pushBack 0;
 } foreach _rangeTargets;
@@ -135,7 +135,7 @@ SET_RANGE_VAR(rangeScorePossible,0);
 					if(!isNil "_target") then {
 						_target animate ["terc", 0];
 						if(_target animationPhase "terc" != 0) then {
-							[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+							[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
 						};
 						_thisLaneRaised pushBack _target;
 					};
@@ -147,7 +147,7 @@ SET_RANGE_VAR(rangeScorePossible,0);
 						_target = _laneTargets select (_x - 1);
 						_target animate ["terc", 0];
 						if(_target animationPhase "terc" != 0) then {
-							[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+							[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
 						};
 						_thisLaneRaised pushBack _target;
 					} foreach _groupTargets;
@@ -177,7 +177,7 @@ SET_RANGE_VAR(rangeScorePossible,0);
 				};
 				_target animate ["terc",1];
 				if(_target animationPhase "terc" != 1) then {
-					[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+					[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
 				};
 			} foreach _thisLaneRaised;
 			_rangeScores set [_forEachIndex, _laneScore];

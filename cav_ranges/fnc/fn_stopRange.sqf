@@ -50,7 +50,7 @@ _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 		_target setVariable ["nopop", nil, true];
 		_target animate ["terc",0];
 		if(_target animationPhase "terc" != 0) then {
-			[_target, "FD_Target_PopDown_Large_F"] call CBA_fnc_globalSay3d;
+			[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
 		};
 	} foreach _laneTargets;
 } foreach _rangeTargets;
