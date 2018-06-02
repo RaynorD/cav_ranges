@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Before submitting a bug report, please read [Troubleshooting](https://github.com/RaynorD/cav_ranges/wiki/Troubleshooting).
 
 ---
 
@@ -32,6 +32,7 @@ If any, copy and paste what you have so far for your createRange function call. 
 
 **Rpt file:**
 Please upload your .rpt file to a hosting site like Pastebin.com, and copy and paste the link here.
+See the wiki article on troubleshooting for info on finding and reading it.
 If the framework was running on a dedicated server, I need the server's rpt file.
 
 **Additional context**
