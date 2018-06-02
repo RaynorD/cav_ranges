@@ -26,7 +26,9 @@ If applicable, add screenshots to help explain your problem.
  - Other mods running: [e.g. CBA, ACE3]
 
 **createRange call**
-If any, copy and paste what you have so far for your createRange function call.
+```sqf
+If any, copy and paste what you have so far for your createRange function call. Please keep the surrounding marks so the formatting is nice.
+```
 
 **Rpt file:**
 Please upload your .rpt file to a hosting site like Pastebin.com, and copy and paste the link here.
