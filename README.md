@@ -20,20 +20,20 @@ After some quick editor setup, all configuration is done via one function's argu
 ```
   "targets", //range type
   "Rifle Range", // title text
-  r2", // range tag
+  "r2", // range tag
   6, // lane count
   8, // targets per lane
   ...
   [38,30,23] // qualification tiers
 ```
 
-### Automated Range Sequencing
-Popup ranges become trivial to control. A minimal syntax of "what and how long" is all that's needed.
+### Automated Range Sequencing  
+Popup ranges become trivial to control. A minimal syntax of "what and how long" is all that's needed, but further control is offered, like playing sounds through range loudspeakers.  
 
 ```
   ["Load your magazine",5],
-  ["Assume a prone position and standby",3],-
-  ["Range is hot!",1],
+  ["Assume a prone position and standby",3],
+  ["Range is hot!",1,"RangeIsHot"], // play "RangeIsHot" sound from CfgSounds
   [[8],5],
   [[2],5],
   [[6,4],5],
