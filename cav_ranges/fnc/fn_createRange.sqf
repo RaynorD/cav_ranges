@@ -2,9 +2,9 @@
 Function: CAV_Ranges_fnc_createRange
 
 Description:
-	Builds the range with user provided values. 
-	
-	This would be the only "public" scope function. 
+	Builds the range with user provided values.
+
+	This would be the only "public" scope function.
 
 Parameters:
 	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
@@ -17,7 +17,7 @@ Parameters:
 	Qualification Tiers - number of targets to attain each qual [Array of Integers]
 	Add Instructor Actions - whether to add player-bound actions to start/stop range [Boolean]
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -32,7 +32,7 @@ Examples:
 		"r1",							// Tag
 		1,								// Lane count
 		10,								// Targets per lane
-		[				
+		[
 										// Range sequence
 											// First element defines the type of event:
 											//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
@@ -70,7 +70,6 @@ Author:
 
 ---------------------------------------------------------------------------- */
 
-
 #include "..\script_macros.hpp"
 
 // Run on both server and clients at mission init
@@ -89,6 +88,8 @@ if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null:
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
 if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
+_readout = GET_ROBJ(_rangeTag,"readout");
+
 SET_RANGE_VAR(rangeActive,false);
 SET_RANGE_VAR(rangeInteractable,true);
 
@@ -99,6 +100,8 @@ if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
 
 _rangeTargets = [];
 _rangeTargetData = [];
+
+_readout = GET_ROBJ(_rangeTag,"readout");
 
 // iterate targets making sure they exist and save to array
 // if spawn mode, save target data (type, position, direction)
@@ -111,7 +114,17 @@ for "_i" from 1 to _laneCount do {
 			ERROR_1("Range target is null: %1",FORMAT_3("%1_target_l%2_t%3",_rangeTag,_i,_j));
 		};
 		_laneTargets pushBack _target;
-		
+
+    // Save ctrl object reference to object for later reference
+    SET_VAR_G(_target,GVAR(objectCtrl),_objectCtrl);
+    SET_VAR_G(_target,GVAR(hitIndicatorData),[
+      _rangeTitle,
+      _readout,
+      _laneCount,
+      _targetCount,
+    ]);
+
+
 		if(_rangeType == "spawn") then {
 			_laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
 		} else {
@@ -120,6 +133,10 @@ for "_i" from 1 to _laneCount do {
 					_target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
 				};
 			};
+
+      if(!isDedicated) then {
+        _target addEventHandler ["HitPart", {(_this select 0) spawn FUNC(eh_targetHit)}];
+      };
 		};
 	};
 	if(_rangeType == "spawn") then {
@@ -157,7 +174,7 @@ if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
 			"",
 			"!(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
 		];
-		
+
 		player addAction [
 			"<t color='#ff0000'>Collapse Range Controls</t>",
 			{player setVariable ['Cav_showRangeActions',false]},
@@ -188,11 +205,11 @@ switch _rangeType do {
 			_objectCtrl addAction ["Reset Range Data", {
 				(_this select 3) spawn FUNC(resetRangeData);
 			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			
+
 			if(_addInstructorActions) then {
 				_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
 				_currentActionPriority = _currentActionPriority - 1;
-				
+
 				player addAction [
 					format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
 					{
@@ -207,7 +224,7 @@ switch _rangeType do {
 					"",
 					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
 				];
-				
+
 				player addAction [
 					format ["<t color='#ff0000'>    %1 - Stop</t>",_rangeTitle],
 					{
@@ -221,38 +238,65 @@ switch _rangeType do {
 					"",
 					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
 				];
-				
+
+        _readout = GET_ROBJ(_rangeTag,"readout");
+        if (!isNil "_readout") then {
+            _currentActionPriority = _currentActionPriority + 1;
+
+            player addAction [
+    					format ["<t color='#00ff00'>    %1 - Show Hit Indicators</t>",_rangeTitle],
+    					{(_this select 3) spawn FUNC(hitIndicators)},
+    					[_rangeTag, true],
+    					_currentActionPriority,
+    					false,
+    					true,
+    					"",
+    					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', true]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+    				];
+
+            player addAction [
+    					format ["<t color='#ff0000'>    %1 - Hide Hit Indicators</t>",_rangeTitle],
+    					{(_this select 3) spawn FUNC(hitIndicators)},
+    					[_rangeTag, false],
+    					_currentActionPriority,
+    					false,
+    					true,
+    					"",
+    					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', true]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+    				];
+        };
+
 				SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
 			};
 		};
-		
+
 		if(isServer) then {
 			[_objectCtrl,_this] spawn {
 				params ["_objectCtrl","_args"];
 				while{true} do {
 					// wait until someone presses the start range button
 					waitUntil { sleep 0.5; _objectCtrl getVariable [QGVAR(rangeActive), false]};
-					
+
 					// run range and save handle
 					SET_RANGE_VAR(sequenceHandle,_args spawn FUNC(startRange));
-					
+
 					// wait until range is done to restart loop
 					waitUntil { sleep 0.5; !(_objectCtrl getVariable [QGVAR(rangeActive), false])};
 				};
 			};
 		};
 	};
-	
+
 	// targets are killed, like an AT range
 	case "spawn" : {
 		_objectCtrl addAction ["Reset Range", {
 			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
 			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
 		}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-		
+
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
-			
+
 			//initialize range scores to 0: [0,0,0,0];
 			_scores = [];
 			for "_i" from 1 to (count (_rangeTargets select 0)) do {
@@ -260,18 +304,18 @@ switch _rangeType do {
 			};
 			SET_RANGE_VAR(rangeScores,_scores);
 			[_rangeTag,"scores"] remoteExec [QFUNC(updateUI),0];
-			
+
 			LOG_1("rangeScores: %1",_this);
 			//begin main loop
 			[_this,_objectCtrl] spawn {
 				params ["_args","_objectCtrl"];
 				_args DEF_RANGE_PARAMS;
-				
+
 				while{true} do {
 					// a player has pressed the range reset
 					if(GET_VAR_D(_objectCtrl,GVAR(rangeReset),false)) then {
 						LOG_1("Resetting %1",_rangeTitle);
-						
+
 						// first iterates to delete all targets that remain
 						_rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 						{
@@ -284,10 +328,10 @@ switch _rangeType do {
 								};
 							} foreach _targets;
 						} foreach _rangeTargets;
-						
+
 						// give time for vehicles to fully delete
 						sleep 2;
-						
+
 						// iteration to spawn new vehicles
 						_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
 						_rangeTargetData = GET_VAR(_objectCtrl,GVAR(rangeTargetData));
@@ -299,38 +343,38 @@ switch _rangeType do {
 							_newTargets = [];
 							{
 								_target = _x;
-								
+
 								// open saved target data
 								_thisTargetData = _thisLaneData select _forEachIndex;
 								_thisTargetData params ["_type","_pos","_vectorDirAndUp"];
-								
+
 								// create vehicle and set direction
 								_newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
 								_newTarget setVectorDirAndUp _vectorDirAndUp;
-								
+
 								// globalize new object as the correct name
 								_name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
 								missionNamespace setVariable [_name,_newTarget];
 								[_newTarget, _name] remoteExec ["setVehicleVarName",0,_newTarget];
-								
+
 								_newTargets pushBack _newTarget;
 							} foreach _targets;
-							
+
 							_newRangeTargets pushBack _newTargets;
 							_rangeScores set [_forEachIndex, 0];
 						} foreach _rangeTargets;
-						
+
 						_rangeTargets = _newRangeTargets;
-						
+
 						// reset score
 						SET_RANGE_VAR(rangeScores,_rangeScores);
 						[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
-						
+
 						// if qualTiers were specified and possibly used, reset those
 						if(!isNil "_qualTiers") then {
 							[_args,false] spawn FUNC(updateQuals);
 						};
-						
+
 						// save new targets
 						SET_RANGE_VAR(rangeTargets,_rangeTargets);
 						SET_RANGE_VAR(rangeReset,false);
@@ -353,16 +397,16 @@ switch _rangeType do {
 									if(!(alive _target) || !(canMove _target)) then {
 										_laneScore = _laneScore + 1;
 									};
-								};						
+								};
 							} foreach _targets;
 							_rangeScores pushBack _laneScore;
 						} foreach _rangeTargets;
-						
+
 						// if the scores have changed, fire UI update
 						if(!(_rangeScores isEqualTo _oldRangeScores)) then {
 							SET_RANGE_VAR(rangeScores,_rangeScores);
 							[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
-							
+
 							if(!isNil "_qualTiers") then {
 								[_args,false] spawn FUNC(updateQuals);
 							};

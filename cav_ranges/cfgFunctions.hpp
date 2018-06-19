@@ -1,5 +1,5 @@
 
-#include ".\script_macros.hpp"  
+#include ".\script_macros.hpp"
 
 class DOUBLES(PREFIX,COMPONENT) //tag
 {
@@ -8,6 +8,8 @@ class DOUBLES(PREFIX,COMPONENT) //tag
 		DEF_FUNC(cancelRange);
 		DEF_FUNC(createRange);
 		DEF_FUNC(eh_explosion);
+		DEF_FUNC(eh_targetHit);
+		DEF_FUNC(hitIndicators);
 		DEF_FUNC(playRangeSound);
 		DEF_FUNC(updateQuals);
 		DEF_FUNC(rangeDialog);
@@ -16,7 +18,7 @@ class DOUBLES(PREFIX,COMPONENT) //tag
 		DEF_FUNC(stopRange);
 		DEF_FUNC(updateUI);
 		DEF_FUNC(watchCurrentShooter);
-		
+
 		DEF_FUNC_POST(postInit);
 		DEF_FUNC_PRE(preInit);
 	};
