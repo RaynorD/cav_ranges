@@ -143,8 +143,13 @@ for "_i" from 1 to _laneCount do {
             _laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
         } else {
             if(isServer) then {
-                if(_target isKindOf "TargetP_Inf_F" && _useCustomTexture) then {
-                    _target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+                if(_target isKindOf "TargetP_Inf_F") then {
+                    if(_useCustomTexture) then {
+                        _target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+                        SET_VAR_G(_target,GVAR(targetCenter),[ARR_3(-0.001, 0.21, 0.3684)]); // custom target center
+                    } else {
+                        SET_VAR_G(_target,GVAR(targetCenter),[ARR_3(-0.004,0.161,-0.023)]); //vanilla target accurate
+                    };
                 };
             };
             
