@@ -121,6 +121,12 @@ for "_i" from 1 to _laneCount do {
         };
         
         _rangeReadouts pushBack _thisReadoutData;
+        
+        if(isServer) then {
+            if(_readout isKindOf "TargetP_Inf_F" && _useCustomTexture) then {
+                _readout setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+            };
+        };
     };
     
     for "_j" from 1 to _targetCount do {
