@@ -27,6 +27,7 @@ Locality:
 
 Examples:
     _target addEventHandler ["HitPart", {(_this select 0) spawn FUNC(eh_targetHit)}];
+    Note: hitPart returns an array of parts hit, so select 0 is needed.
 
 Author:
 	=7Cav=WO1.Raynor.D
