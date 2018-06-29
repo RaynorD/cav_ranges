@@ -106,18 +106,33 @@ for "_i" from 1 to _laneCount do {
     private _laneTargets = [];
     private _laneTargetData = [];
     private _readout = nil;
+    
+    if(_hasHitIndicators) then {
+        _thisReadoutData = [];
+        _readout = missionNamespace getVariable [format ["%1_readout_l%2", _rangeTag, _i], objNull];
+        if(isNull _readout) then {
+            ERROR_3("Range readout %1_readout_l%2 was nil: %3", _rangeTag, _i,_this)
+        } else {
+            _thisReadoutData pushBack _readout;
+        };
+        _readoutPedestal = missionNamespace getVariable [format ["%1_readoutPedestal_l%2", _rangeTag, _i], objNull];
+        if(!isNull _readoutPedestal) then {
+            _thisReadoutData pushBack _readoutPedestal;
+        };
+        
+        _rangeReadouts pushBack _thisReadoutData;
+    };
+    
     for "_j" from 1 to _targetCount do {
         private _target = missionNamespace getVariable [format["%1_target_l%2_t%3", _rangeTag, _i, _j], objNull];
         if(isNull _target) then {
             ERROR_1("Range target is null: %1",FORMAT_3("%1_target_l%2_t%3",_rangeTag,_i,_j));
         };
         _laneTargets pushBack _target;
-
-    // Save ctrl object reference to object for later reference
-    SET_VAR_G(_target,GVAR(objectCtrl),_objectCtrl);
-    SET_VAR_G(_target,GVAR(hitIndicatorData),[ARR_4(_rangeTitle,_readout,_laneCount,_targetCount)]);
-
-
+        
+        // Save ctrl object reference to object for later reference
+        SET_VAR_G(_target,GVAR(objectCtrl),_objectCtrl);
+        
         if(_rangeType == "spawn") then {
             _laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
         } else {
@@ -126,10 +141,14 @@ for "_i" from 1 to _laneCount do {
                     _target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
                 };
             };
-
-      if(!isDedicated) then {
-        _target addEventHandler ["HitPart", {(_this select 0) spawn FUNC(eh_targetHit)}];
-      };
+            
+            if(!isDedicated) then {
+                if(_hasHitIndicators) then {
+                    _target addEventHandler ["HitPart", format [QUOTE(((_this select 0) + [%1]) spawn FUNC(eh_targetHit)), _readout]];
+                } else {
+                    _target addEventHandler ["HitPart", {(_this select 0) spawn FUNC(eh_targetHit)}];
+                };
+            };
         };
     };
     if(_rangeType == "spawn") then {
@@ -139,6 +158,10 @@ for "_i" from 1 to _laneCount do {
 };
 
 SET_RANGE_VAR(rangeTargets,_rangeTargets);
+
+if(_hasHitIndicators) then {
+    SET_RANGE_VAR(rangeReadouts,_rangeReadouts);
+};
 
 if(_rangeType == "spawn") then {
     SET_RANGE_VAR(rangeTargetData,_rangeTargetData);
@@ -232,11 +255,10 @@ switch _rangeType do {
                     format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
                 ];
 
-        _readout = GET_ROBJ(_rangeTag,"readout");
-        if (!isNil "_readout") then {
-            _currentActionPriority = _currentActionPriority + 1;
+                if (_hasHitIndicators) then {
+                    _currentActionPriority = _currentActionPriority + 1;
 
-            player addAction [
+                    player addAction [
                         format ["<t color='#00ff00'>    %1 - Show Hit Indicators</t>",_rangeTitle],
                         {(_this select 3) spawn FUNC(hitIndicators)},
                         [_rangeTag, true],
@@ -244,10 +266,10 @@ switch _rangeType do {
                         false,
                         true,
                         "",
-                        format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', true]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+                        format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
                     ];
 
-            player addAction [
+                    player addAction [
                         format ["<t color='#ff0000'>    %1 - Hide Hit Indicators</t>",_rangeTitle],
                         {(_this select 3) spawn FUNC(hitIndicators)},
                         [_rangeTag, false],
@@ -255,9 +277,9 @@ switch _rangeType do {
                         false,
                         true,
                         "",
-                        format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', true]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+                        format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
                     ];
-        };
+                };
 
                 SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
             };

@@ -36,13 +36,35 @@ Author:
 
 #include "..\script_macros.hpp"
 
-params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_direct"];
+params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_direct", "_readout"];
 
-systemChat format ["Target hit: %1", _this];
+//systemChat format ["Target hit: %1", _this];
 
-if(_target animationPhase "terc" == 0 && count _selection > 0 && _direct) then {
-    _objectCtrl = GET_VAR(_target,GVAR(objectCtrl));
-    if(isNil "_objectCtrl") then {NIL_ERROR(_objectCtrl)} else {
-    
+if(!isNil "_readout") then {
+    if(_target animationPhase "terc" == 0 && count _selection > 0 && _direct) then {
+        //_targetCenter = [-0.004,0.161,-0.023]; default target 2 accurate
+        _targetCenter = [-0.001, 0.21, 0.3684]; // custom target center
+        
+        _iconMarkPos = _target worldToModel _position;
+        _iconMarkPos set [1, (_targetCenter select 1) - 0.03];
+        //LOG_VAR(_iconMarkPos);
+        
+        _marks = _readout getVariable [QGVAR(rangeHits), []];
+    	_marks pushback _iconMarkPos;
+        LOG_VAR(_marks);
+    	_readout setVariable [QGVAR(rangeHits), _marks, true];
+        
+        _modelHitPos = _target worldToModel (ASLtoATL(_position));
+        _modelHitPosFlat = [
+          (_modelHitPos select 0) - (_targetCenter select 0),
+          _targetCenter select 1,
+          (_modelHitPos select 2) - (_targetCenter select 2)
+        ];
+        //LOG_VAR(_modelHitPosFlat);
+        
+        _distanceOffsetCenter = (_modelHitPosFlat distance _targetCenter) toFixed 5;
+        //LOG_VAR(_distanceOffsetCenter);
+        
+                
     };
 };

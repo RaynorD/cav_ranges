@@ -7,6 +7,7 @@ class DOUBLES(PREFIX,COMPONENT) //tag
     {
         DEF_FUNC(cancelRange);
         DEF_FUNC(createRange);
+        DEF_FUNC(drawHitIndicators);
         DEF_FUNC(eh_explosion);
         DEF_FUNC(eh_targetHit);
         DEF_FUNC(hitIndicators);

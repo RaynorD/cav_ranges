@@ -35,3 +35,7 @@ GVAR(scoreTiers) = [
     ["SS",QUOTE(IMAGE(sharpshooter)),"Sharpshooter"],
     ["MM",QUOTE(IMAGE(marksman)),"Marksman"]
 ];
+
+KK_fnc_trueZoom = {
+    ([0.5,0.5] distance2D worldToScreen positionCameraToWorld [0,3,4]) * (getResolution select 5) / 2
+};

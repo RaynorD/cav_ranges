@@ -29,20 +29,29 @@ params ["_rangeTag","_state"];
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
 if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
-_currentState = GET_VAR_D(_objectCtrl,GVAR(hitIndicators),true);
+_currentState = GET_RANGE_VAR_D(hitIndicators,false);
+
+_rangeReadouts = GET_RANGE_VAR(rangeReadouts);
+if (isNil "_rangeReadouts") exitWith {NIL_ERROR(_rangeReadouts)};
 
 if(!(_currentState isEqualTo _state)) then {
-    _readout = GET_ROBJ(_rangeTag,"readout");
-    if (isNil "_readout") exitWith {
-        NIL_ERROR(_readout);
-    };
+    {
+        _x params ["_readout","_readoutPedestal"];
+        if (isNil "_readout") exitWith {NIL_ERROR(_readout)};
+        
+        _readout hideObjectGlobal !_state;
+        if (!isNil "_readoutPedestal") then {
+            _readoutPedestal hideObjectGlobal !_state;
+        };
+        
+        if (_state) then {
+            LOG_1("%1 hitIndicators starting EH",_readout);
+            [format ["%1_l%2_%3",QGVAR(hitDrawEH),_rangeTag,_forEachIndex], "onEachFrame", FUNC(drawHitIndicators), [_readout]] call BIS_fnc_addStackedEventHandler;
+        } else {
+            LOG_1("%1 hitIndicators stopping EH",_readout);
+            [format ["%1_l%2_%3",QGVAR(hitDrawEH),_rangeTag,_forEachIndex], "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
+        };
+    } forEach _rangeReadouts;
     
-    _readoutPedestal = GET_ROBJ(_rangeTag,"readoutPedestal");
-
-    SET_VAR_G(_objectCtrl,GVAR(hitIndicators),_state);
-
-    _readout hideObjectGlobal !_state;
-    if (!isNil "_readoutPedestal") then {
-        _readoutPedestal hideObjectGlobal !_state;
-    };
+    SET_RANGE_VAR(hitIndicators,_state);
 };

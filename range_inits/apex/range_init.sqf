@@ -1,5 +1,5 @@
 // rifle range "rr" - TargetP_Inf_Acc2_F
-// grenade range "gr" - TargetP_Inf_F 
+// grenade range "gr" - TargetP_Inf_F
 // killhouse "kh" - TargetP_Inf_Acc2_NoPop_F (kh_target_1)
 
 
@@ -25,7 +25,7 @@
 	"rr",			// range tag
 	6,				// lane count
 	8,				// targets per lane
-	[				
+	[
 		// Range sequence
 			// First element defines the type of event:
 			//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
@@ -89,7 +89,8 @@
 				//   values below the last element will show no go
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
 	true,	// add player actions
-	true	// use custom black texture 
+	true,	// use custom black texture
+    true    // has hit indicators
 ] spawn cav_ranges_fnc_createRange;
 
 [
@@ -98,7 +99,7 @@
 	"gr",			// range tag
 	4,				// lane count
 	8,				// targets per lane
-	[				
+	[
 		// Range sequence
 		["Ready your grenades",5],
 		["Range is hot!",1],
@@ -113,4 +114,3 @@
 	[8,6,5],	// qualification tiers
 	true
 ] spawn cav_ranges_fnc_createRange;
-
