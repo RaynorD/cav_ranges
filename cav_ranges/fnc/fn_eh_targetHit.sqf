@@ -35,7 +35,7 @@ Author:
 
 #include "..\script_macros.hpp"
 
-params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"];
+params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_direct"];
 
 systemChat format ["Target hit: %1", _this];
 
