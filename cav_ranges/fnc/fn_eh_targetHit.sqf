@@ -36,23 +36,22 @@ Author:
 
 #include "..\script_macros.hpp"
 
-params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_direct", "_readout"];
+params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_direct", "_readout", ["_round",50]];
 
 //systemChat format ["Target hit: %1", _this];
 
 if(!isNil "_readout") then {
     if(_target animationPhase "terc" == 0 && count _selection > 0 && _direct) then {
-        //_targetCenter = [-0.004,0.161,-0.023]; default target 2 accurate
-        _targetCenter = [-0.001, 0.21, 0.3684]; // custom target center
+        _targetCenter = GET_VAR(_target,GVAR(targetCenter));
+        if(isNil "_targetCenter") exitWith {ERROR_1("targetCenter was nil for %1",_target)};
         
         _iconMarkPos = _target worldToModel _position;
         _iconMarkPos set [1, (_targetCenter select 1) - 0.03];
-        //LOG_VAR(_iconMarkPos);
         
-        _marks = _readout getVariable [QGVAR(rangeHits), []];
-    	_marks pushback _iconMarkPos;
-        LOG_VAR(_marks);
-    	_readout setVariable [QGVAR(rangeHits), _marks, true];
+        // save location for icons
+        _marks = GET_VAR_ARR(_readout,GVAR(rangeHits));
+        _marks pushback _iconMarkPos;
+        SET_VAR_G(_readout,GVAR(rangeHits),_marks);
         
         _modelHitPos = _target worldToModel (ASLtoATL(_position));
         _modelHitPosFlat = [
@@ -60,11 +59,59 @@ if(!isNil "_readout") then {
           _targetCenter select 1,
           (_modelHitPos select 2) - (_targetCenter select 2)
         ];
-        //LOG_VAR(_modelHitPosFlat);
         
-        _distanceOffsetCenter = (_modelHitPosFlat distance _targetCenter) toFixed 5;
-        //LOG_VAR(_distanceOffsetCenter);
+        _distanceOffsetCenter = parseNumber ((_modelHitPosFlat distance _targetCenter) toFixed 5);
         
-                
+        private _animStateChars = toArray animationState _shooter;
+        private _animShort = toUpper (toString [_animStateChars select 5,_animStateChars select 6,_aniMStateChars select 7]);
+        private _playerStance = "";
+        switch (_animShort) do {
+            case "ERC" : {_playerStance = "Standing"};
+            case "KNL" : {_playerStance = "Kneeling"};
+            case "PNE" : {_playerStance = "Prone"};
+            case "BIP" : {_playerStance = "Prone Supported"};
+        };
+        
+        // save accuracy for averaging
+        private _accuracyData = GET_VAR_ARR(_readout,GVAR(accuracyData));
+        _errorCm = (_distanceOffsetCenter * 100);
+        _accuracyData pushBack _errorCm;
+        SET_VAR_G(_readout,GVAR(accuracyData),_accuracyData);
+        
+        // save distance for averaging
+        _distanceData = GET_VAR_ARR(_readout,GVAR(distanceData));
+        _distance = ((round ((_shooter distance _target) / _round)) * _round);
+        _distanceData pushBack _distance;
+        SET_VAR_G(_readout,GVAR(distanceData),_distanceData);
+        
+        _weapon = getText (configFile >> "CfgWeapons" >> primaryWeapon _shooter >> "displayName");
+        _ammoName = getText (configFile >> "CfgMagazines" >> currentMagazine _shooter >> "displayName");
+        _optics =  ((primaryWeaponItems _shooter) select 2);
+        _bipod =  ((primaryWeaponItems _shooter) select 3);
+        
+        _weaponText = _weapon;
+        _attachments = [];
+        _hasAttachment = false;
+        if(_optics != "") then {
+            _hasAttachment = true;
+            _attachments pushBack getText (configFile >> "CfgWeapons" >> _optics >> "displayName");
+        };
+        
+        if(_bipod != "") then {
+            _hasAttachment = true;
+            _attachments pushBack getText (configFile >> "CfgWeapons" >> _bipod >> "displayName");
+        };
+        
+        if(_hasAttachment) then {
+            _weapon = format ["%1 + %2", _weapon, _attachments joinString ", "];
+        };
+        
+        _laneInfo = GET_VAR_ARR(_target,GVAR(hitIndicatorData));
+        _laneInfo params [["_laneName","?"],["_targetIndex","?"]];
+        _message = format["Rangemaster: Hit! %1, T%2 - Off Center: %3cm (%4, ", _laneName, _targetIndex, _errorCm, name _shooter];
+        _message = _message + format ["%1m, ", _distance];
+        _message = _message + format ["%1, %2, %3)", _playerStance, _weapon, _ammoName];
+        
+        systemChat _message;
     };
 };
