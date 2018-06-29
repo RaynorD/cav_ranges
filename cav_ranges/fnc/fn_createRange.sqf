@@ -82,13 +82,11 @@ if(hasInterface) then {
     waitUntil {sleep 0.1; !isNull player}; // a stab at fixing JIP addactions
 };
 
-_objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
+private _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
 if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
-_objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
+private _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
 if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
-
-_readout = GET_ROBJ(_rangeTag,"readout");
 
 SET_RANGE_VAR(rangeActive,false);
 SET_RANGE_VAR(rangeInteractable,true);
@@ -98,18 +96,18 @@ if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
     _objectCtrl setObjectTexture [0, QUOTE(IMAGE(7th))];
 };
 
-_rangeTargets = [];
-_rangeTargetData = [];
-
-_readout = GET_ROBJ(_rangeTag,"readout");
+private _rangeTargets = [];
+private _rangeTargetData = [];
+private _rangeReadouts = [];
 
 // iterate targets making sure they exist and save to array
 // if spawn mode, save target data (type, position, direction)
 for "_i" from 1 to _laneCount do {
-    _laneTargets = [];
-    _laneTargetData = [];
+    private _laneTargets = [];
+    private _laneTargetData = [];
+    private _readout = nil;
     for "_j" from 1 to _targetCount do {
-        _target = missionNamespace getVariable [format["%1_target_l%2_t%3", _rangeTag, _i, _j], objNull];
+        private _target = missionNamespace getVariable [format["%1_target_l%2_t%3", _rangeTag, _i, _j], objNull];
         if(isNull _target) then {
             ERROR_1("Range target is null: %1",FORMAT_3("%1_target_l%2_t%3",_rangeTag,_i,_j));
         };
@@ -202,7 +200,7 @@ switch _rangeType do {
             }, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 
             if(_addInstructorActions) then {
-                _currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
+                private _currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
                 _currentActionPriority = _currentActionPriority - 1;
 
                 player addAction [
@@ -293,7 +291,7 @@ switch _rangeType do {
             SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
 
             //initialize range scores to 0: [0,0,0,0];
-            _scores = [];
+            private _scores = [];
             for "_i" from 1 to (count (_rangeTargets select 0)) do {
                 _scores pushBack 0;
             };
@@ -312,11 +310,11 @@ switch _rangeType do {
                         LOG_1("Resetting %1",_rangeTitle);
 
                         // first iterates to delete all targets that remain
-                        _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
+                        private _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
                         {
-                            _targets = _x;
+                            private _targets = _x;
                             {
-                                _target = _x;
+                                private _target = _x;
                                 if(!isNil "_target") then {
                                     deleteVehicle _target;
                                     systemchat format ["deleting target %1",_target];
@@ -328,27 +326,27 @@ switch _rangeType do {
                         sleep 2;
 
                         // iteration to spawn new vehicles
-                        _rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-                        _rangeTargetData = GET_VAR(_objectCtrl,GVAR(rangeTargetData));
-                        _newRangeTargets = [];
+                        private _rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+                        private _rangeTargetData = GET_VAR(_objectCtrl,GVAR(rangeTargetData));
+                        private _newRangeTargets = [];
                         {
-                            _targets = _x;
-                            _laneIndex = _forEachIndex;
-                            _thisLaneData = _rangeTargetData select _laneIndex;
-                            _newTargets = [];
+                            private _targets = _x;
+                            private _laneIndex = _forEachIndex;
+                            private _thisLaneData = _rangeTargetData select _laneIndex;
+                            private _newTargets = [];
                             {
-                                _target = _x;
+                                private _target = _x;
 
                                 // open saved target data
-                                _thisTargetData = _thisLaneData select _forEachIndex;
+                                private _thisTargetData = _thisLaneData select _forEachIndex;
                                 _thisTargetData params ["_type","_pos","_vectorDirAndUp"];
 
                                 // create vehicle and set direction
-                                _newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+                                private _newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
                                 _newTarget setVectorDirAndUp _vectorDirAndUp;
 
                                 // globalize new object as the correct name
-                                _name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
+                                private _name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
                                 missionNamespace setVariable [_name,_newTarget];
                                 [_newTarget, _name] remoteExec ["setVehicleVarName",0,_newTarget];
 
@@ -376,15 +374,15 @@ switch _rangeType do {
                         SET_RANGE_VAR(rangeInteractable,true);
                     } else {
                         // get current range scores to compare later
-                        _oldRangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-                        _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
-                        _rangeScores = [];
+                        private _oldRangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
+                        private _rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
+                        private _rangeScores = [];
                         {
-                            _targets = _x;
-                            _laneIndex = _forEachIndex;
-                            _laneScore = 0;
+                            private _targets = _x;
+                            private _laneIndex = _forEachIndex;
+                            private _laneScore = 0;
                             {
-                                _target = _x;
+                                private _target = _x;
                                 // count as a kill if target is nil or dead/immobilized
                                 if(isNil "_target") then {
                                     _laneScore = _laneScore + 1;
