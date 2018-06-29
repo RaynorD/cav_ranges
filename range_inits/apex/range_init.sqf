@@ -91,7 +91,7 @@
 	true,	// add player actions
 	true,	// use custom black texture
     true    // has hit indicators
-] spawn cav_ranges_fnc_createRange;
+] call cav_ranges_fnc_createRange;
 
 [
 	"targets", 		//range type
@@ -113,4 +113,4 @@
 	nil,	// target grouping
 	[8,6,5],	// qualification tiers
 	true
-] spawn cav_ranges_fnc_createRange;
+] call cav_ranges_fnc_createRange;
