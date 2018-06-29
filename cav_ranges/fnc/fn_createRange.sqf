@@ -190,6 +190,10 @@ if(isServer) then {
     _this spawn FUNC(watchCurrentShooter);
 };
 
+if(isNil QGVAR(currentActionPriority)) then {
+    GVAR(currentActionPriority) = 300;
+};
+
 if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
     if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
         SET_VAR(player,GVAR(rangeControlsAdded),true);
@@ -208,7 +212,7 @@ if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
             "<t color='#ff0000'>Collapse Range Controls</t>",
             {player setVariable ['Cav_showRangeActions',false]},
             nil,
-            250,
+            GVAR(currentActionPriority),
             false,
             true,
             "",
@@ -216,6 +220,8 @@ if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
         ];
     };
 };
+
+GVAR(currentActionPriority) = GVAR(currentActionPriority) - 1;
 
 switch _rangeType do {
     // popup targets are used, "terc" animation
@@ -236,10 +242,7 @@ switch _rangeType do {
             }, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 
             if(_addInstructorActions) then {
-                if(isNil QGVAR(currentActionPriority)) then {
-                    GVAR(currentActionPriority) = 250;
-                };
-                GVAR(currentActionPriority) = GVAR(currentActionPriority) + 1;
+                GVAR(currentActionPriority) = GVAR(currentActionPriority) - 1;
 
                 player addAction [
                     format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
@@ -271,7 +274,7 @@ switch _rangeType do {
                 ];
 
                 if (_hasHitIndicators) then {
-                    GVAR(currentActionPriority) = GVAR(currentActionPriority) + 1;
+                    GVAR(currentActionPriority) = GVAR(currentActionPriority) - 1;
 
                     player addAction [
                         format ["<t color='#00ff00'>        %1 - Show Hit Indicators</t>",_rangeTitle],
