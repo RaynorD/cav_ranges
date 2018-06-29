@@ -117,12 +117,7 @@ for "_i" from 1 to _laneCount do {
 
     // Save ctrl object reference to object for later reference
     SET_VAR_G(_target,GVAR(objectCtrl),_objectCtrl);
-    SET_VAR_G(_target,GVAR(hitIndicatorData),[
-      _rangeTitle,
-      _readout,
-      _laneCount,
-      _targetCount,
-    ]);
+    SET_VAR_G(_target,GVAR(hitIndicatorData),[ARR_4(_rangeTitle,_readout,_laneCount,_targetCount)]);
 
 
 		if(_rangeType == "spawn") then {
