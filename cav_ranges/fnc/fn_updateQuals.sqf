@@ -2,35 +2,35 @@
 Function: CAV_Ranges_fnc_stopRange
 
 Description:
-	Stops the sequence for a popup target range.
-	Used for both normal and premature end of the sequence.
-	
-	Not used for spawn ranges.
+    Stops the sequence for a popup target range.
+    Used for both normal and premature end of the sequence.
+    
+    Not used for spawn ranges.
 
 Parameters:
-	Args - (Standard range parameters, see fn_createRange for detailed info):
-		Type - Sets mode of operation for the range [String, ["targets","spawn"]]
-		Title - String representation of the range [String]
-		Tag - Internal prefix used for the range, so it can find range objects [String]
-		Lane Count - How many lanes there are [Integer]
-		Target Count - Number of targets per range [Integer]
-		Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
-		Grouping - target groupings [Array of Arrays of Numbers]
-		Qualitification Tiers - number of targets to attain each qual [Array of Integers]
-	Show No Go - Whether to set the flag to -1 if below no go threshold [Boolean, optional - default true]
-		(So that AT range doesn't just show no go all the time)
+    Args - (Standard range parameters, see fn_createRange for detailed info):
+        Type - Sets mode of operation for the range [String, ["targets","spawn"]]
+        Title - String representation of the range [String]
+        Tag - Internal prefix used for the range, so it can find range objects [String]
+        Lane Count - How many lanes there are [Integer]
+        Target Count - Number of targets per range [Integer]
+        Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
+        Grouping - target groupings [Array of Arrays of Numbers]
+        Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+    Show No Go - Whether to set the flag to -1 if below no go threshold [Boolean, optional - default true]
+        (So that AT range doesn't just show no go all the time)
 
-Returns: 
-	Nothing
+Returns:
+    Nothing
 
 Locality:
-	Server
+    Server
 
 Examples:
    [_this,false] spawn CAV_Ranges_fnc_stopRange;
 
 Author:
-	=7Cav=WO1.Raynor.D
+    =7Cav=WO1.Raynor.D
 
 ---------------------------------------------------------------------------- */
 
@@ -56,20 +56,20 @@ if(isNil "_qualTiers") exitWith {LOG_1("%1 qualTiers is nil", _rangeTitle)};
 // return qualification tier, need to make this scalable
 _rangeScoreQuals = [];
 {
-	if((count _rangeScores) > _forEachIndex) then {
-		_score = _rangeScores select _forEachIndex;
-		if(!isNil "_score") then {
-			_qual = -1;
-			if(_score > 0) then {
-				// [4,3,2]
-				{
-					if(_score >= _x) exitWith {_qual = _forEachIndex};
-				} foreach _qualTiers;
-			};
-			
-			_rangeScoreQuals set [_forEachIndex, _qual];
-		};
-	};
+    if((count _rangeScores) > _forEachIndex) then {
+        _score = _rangeScores select _forEachIndex;
+        if(!isNil "_score") then {
+            _qual = -1;
+            if(_score > 0) then {
+                // [4,3,2]
+                {
+                    if(_score >= _x) exitWith {_qual = _forEachIndex};
+                } foreach _qualTiers;
+            };
+            
+            _rangeScoreQuals set [_forEachIndex, _qual];
+        };
+    };
 } foreach _rangeTargets;
 
 SET_RANGE_VAR(rangeScoreQuals,_rangeScoreQuals);

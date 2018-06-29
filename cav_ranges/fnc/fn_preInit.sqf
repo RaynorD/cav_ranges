@@ -2,27 +2,27 @@
 Function: CAV_Ranges_fnc_postInit
 
 Description:
-	Run on mission postInit.
-	
-	Currently just sets a time to use to later calculate mission init time.
-	
-	KK_fnc_trueZoom not used in this version.
-	
+    Run on mission postInit.
+    
+    Currently just sets a time to use to later calculate mission init time.
+    
+    KK_fnc_trueZoom not used in this version.
+    
 Parameters:
-	None
+    None
 
 Locality:
-	Server
-	
-Returns: 
-	Nothing
+    Server
+    
+Returns:
+    Nothing
 
 Examples:
-	Called via config
-	
+    Called via config
+    
 
 Author:
-	=7Cav=WO1.Raynor.D
+    =7Cav=WO1.Raynor.D
 
 ---------------------------------------------------------------------------- */
 

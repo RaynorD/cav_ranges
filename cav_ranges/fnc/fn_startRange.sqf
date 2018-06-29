@@ -2,30 +2,30 @@
 Function: CAV_Ranges_fnc_startRange
 
 Description:
-	Starts the sequence for a popup target range.
-	Not used for spawn ranges.
+    Starts the sequence for a popup target range.
+    Not used for spawn ranges.
 
 Parameters (Standard range parameters, see fn_createRange for detailed info):
-	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
-	Title - String representation of the range [String]
-	Tag - Internal prefix used for the range, so it can find range objects [String]
-	Lane Count - How many lanes there are [Integer]
-	Target Count - Number of targets per range [Integer]
-	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
-	Grouping - target groupings [Array of Arrays of Numbers]
-	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+    Type - Sets mode of operation for the range [String, ["targets","spawn"]]
+    Title - String representation of the range [String]
+    Tag - Internal prefix used for the range, so it can find range objects [String]
+    Lane Count - How many lanes there are [Integer]
+    Target Count - Number of targets per range [Integer]
+    Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
+    Grouping - target groupings [Array of Arrays of Numbers]
+    Qualitification Tiers - number of targets to attain each qual [Array of Integers]
 
-Returns: 
-	Nothing
+Returns:
+    Nothing
 
 Locality:
-	Server
+    Server
 
 Examples:
     _this spawn CAV_Ranges_fnc_startRange;
 
 Author:
-	=7Cav=WO1.Raynor.D
+    =7Cav=WO1.Raynor.D
 
 ---------------------------------------------------------------------------- */
 
@@ -50,40 +50,40 @@ if(isNil "_rangeTargets") exitWith {ERROR_1("Range targets were empty: %1",_this
 
 // make sure all targets are up, if not wait until they are
 while{true} do {
-	_allTargetsUp = true;
-	{
-		_laneTargets = _x;
-		_laneIndex = _forEachIndex;
-		{
-			_target = _x;
-			//LOG_2("%1 - %2",_target,_target animationPhase "terc");
-			if(_target animationPhase "terc" != 0) then {
-				_allTargetsUp = false;
-				LOG_3("Target not raised: %1 L%2 T%3",_rangeTag,_laneIndex+1,_forEachIndex+1);
-			};
-		} foreach _laneTargets;
-	} foreach _rangeTargets;
-	
-	LOG_VAR(_allTargetsUp);
-	if(_allTargetsUp) exitWith {};
-	
-	LOG("Waiting for all targets to reset");
-	_msgData = ["Waiting for all targets to reset...",2];
-	SET_RANGE_VAR(rangeMessage,_msgData);
-	[_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
-	sleep 2;
+    _allTargetsUp = true;
+    {
+        _laneTargets = _x;
+        _laneIndex = _forEachIndex;
+        {
+            _target = _x;
+            //LOG_2("%1 - %2",_target,_target animationPhase "terc");
+            if(_target animationPhase "terc" != 0) then {
+                _allTargetsUp = false;
+                LOG_3("Target not raised: %1 L%2 T%3",_rangeTag,_laneIndex+1,_forEachIndex+1);
+            };
+        } foreach _laneTargets;
+    } foreach _rangeTargets;
+    
+    LOG_VAR(_allTargetsUp);
+    if(_allTargetsUp) exitWith {};
+    
+    LOG("Waiting for all targets to reset");
+    _msgData = ["Waiting for all targets to reset...",2];
+    SET_RANGE_VAR(rangeMessage,_msgData);
+    [_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
+    sleep 2;
 };
 
 // lower all targets, set nopop
 {
-	_laneTargets = _x;
-	{
-		_target = _x;	
-		_target setVariable ["nopop", true, true];
-		_target animate ["terc",1];
-		[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
-	} foreach _laneTargets;
-	_rangeScores pushBack 0;
+    _laneTargets = _x;
+    {
+        _target = _x;
+        _target setVariable ["nopop", true, true];
+        _target animate ["terc",1];
+        [_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
+    } foreach _laneTargets;
+    _rangeScores pushBack 0;
 } foreach _rangeTargets;
 
 _this spawn FUNC(resetRangeData);
@@ -101,98 +101,98 @@ SET_RANGE_VAR(rangeScorePossible,0);
 
 // start range sequence
 {
-	_x params [["_event","Standby..."],["_delay",5],"_sound",["_delay2",2]];
-	INFO_2("%1 event: %2", _rangeTitle, _x);
-	_handled = false;
-	
-	if(!isNil "_sound") then {
-		[_rangeTag, _sound] spawn FUNC(playRangeSound);
-	};
-	
-	if(typeName _event == "STRING") then { // range message, show message and progress bar
-		SET_RANGE_VAR(rangeMessage,_x);
-		[_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
-		sleep _delay;
-		_handled = true;
-	};
-	if(typeName _event == "ARRAY") then { // targets to raise
-		_targetsRaised = [];
-		{
-			_laneTargets = _x;
-			_thisLaneRaised = [];
-			if(count _rangeGrouping == 0) then { // single target grouping
-				{
-					_targetIndex = _x;
-					_target = nil;
-					if(_targetIndex > count _laneTargets) then {
-						//_target = _laneTargets select (floor random ((count _laneTargets) - 1));
-						ERROR_2("%1 Target was out of bounds: %2",_rangeTitle,_targetIndex);
-						// global BIS_fnc_error
-					} else {
-						_target = _laneTargets select (_x - 1);
-					};
-					
-					if(!isNil "_target") then {
-						_target animate ["terc", 0];
-						if(_target animationPhase "terc" != 0) then {
-							[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
-						};
-						_thisLaneRaised pushBack _target;
-					};
-				} foreach _event;
-			} else { // grouping was used TODO: Doesn't work
-				{
-					_groupTargets = _x;
-					{
-						_target = _laneTargets select (_x - 1);
-						_target animate ["terc", 0];
-						if(_target animationPhase "terc" != 0) then {
-							[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
-						};
-						_thisLaneRaised pushBack _target;
-					} foreach _groupTargets;
-				} foreach _event;
-			};
-			_targetsRaised pushBack _thisLaneRaised;
-		} foreach _rangeTargets;
-		
-		// update possible score
-		_targetCount = count _event;
-		_newPossible = (GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0)) + _targetCount;
-		SET_RANGE_VAR(rangeScorePossible,_newPossible);
-		
-		sleep _delay;
-		
-		// count downed targets
-		_rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
-		{
-			_laneScore = (_rangeScores select _forEachIndex);
-			_thisLaneRaised = _x;
-			
-			if(isNil "_laneScore") then {_laneScore = 0};
-			{
-				_target = _x;
-				if(_target animationPhase "terc" > 0.5) then {
-					_laneScore = _laneScore + 1;
-				};
-				_target animate ["terc",1];
-				if(_target animationPhase "terc" != 1) then {
-					[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
-				};
-			} foreach _thisLaneRaised;
-			_rangeScores set [_forEachIndex, _laneScore];
-			
-		} foreach _targetsRaised;
-		
-		SET_RANGE_VAR(rangeScores,_rangeScores);
-		[_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
-		_handled = true;
-		sleep _delay2;
-	};
-	if(!_handled) then { // shouldn't happen, means range is misconfigured
-		ERROR_1("Range event was not handled: %1", str _x);
-		sleep _delay;
-	};
+    _x params [["_event","Standby..."],["_delay",5],"_sound",["_delay2",2]];
+    INFO_2("%1 event: %2", _rangeTitle, _x);
+    _handled = false;
+    
+    if(!isNil "_sound") then {
+        [_rangeTag, _sound] spawn FUNC(playRangeSound);
+    };
+    
+    if(typeName _event == "STRING") then { // range message, show message and progress bar
+        SET_RANGE_VAR(rangeMessage,_x);
+        [_rangeTag, "message"] remoteExec [QFUNC(updateUI),0];
+        sleep _delay;
+        _handled = true;
+    };
+    if(typeName _event == "ARRAY") then { // targets to raise
+        _targetsRaised = [];
+        {
+            _laneTargets = _x;
+            _thisLaneRaised = [];
+            if(count _rangeGrouping == 0) then { // single target grouping
+                {
+                    _targetIndex = _x;
+                    _target = nil;
+                    if(_targetIndex > count _laneTargets) then {
+                        //_target = _laneTargets select (floor random ((count _laneTargets) - 1));
+                        ERROR_2("%1 Target was out of bounds: %2",_rangeTitle,_targetIndex);
+                        // global BIS_fnc_error
+                    } else {
+                        _target = _laneTargets select (_x - 1);
+                    };
+                    
+                    if(!isNil "_target") then {
+                        _target animate ["terc", 0];
+                        if(_target animationPhase "terc" != 0) then {
+                            [_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
+                        };
+                        _thisLaneRaised pushBack _target;
+                    };
+                } foreach _event;
+            } else { // grouping was used TODO: Doesn't work
+                {
+                    _groupTargets = _x;
+                    {
+                        _target = _laneTargets select (_x - 1);
+                        _target animate ["terc", 0];
+                        if(_target animationPhase "terc" != 0) then {
+                            [_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
+                        };
+                        _thisLaneRaised pushBack _target;
+                    } foreach _groupTargets;
+                } foreach _event;
+            };
+            _targetsRaised pushBack _thisLaneRaised;
+        } foreach _rangeTargets;
+        
+        // update possible score
+        _targetCount = count _event;
+        _newPossible = (GET_VAR_D(_objectCtrl,GVAR(rangeScorePossible),0)) + _targetCount;
+        SET_RANGE_VAR(rangeScorePossible,_newPossible);
+        
+        sleep _delay;
+        
+        // count downed targets
+        _rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
+        {
+            _laneScore = (_rangeScores select _forEachIndex);
+            _thisLaneRaised = _x;
+            
+            if(isNil "_laneScore") then {_laneScore = 0};
+            {
+                _target = _x;
+                if(_target animationPhase "terc" > 0.5) then {
+                    _laneScore = _laneScore + 1;
+                };
+                _target animate ["terc",1];
+                if(_target animationPhase "terc" != 1) then {
+                    [_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
+                };
+            } foreach _thisLaneRaised;
+            _rangeScores set [_forEachIndex, _laneScore];
+            
+        } foreach _targetsRaised;
+        
+        SET_RANGE_VAR(rangeScores,_rangeScores);
+        [_rangeTag, "scores"] remoteExec [QFUNC(updateUI),0];
+        _handled = true;
+        sleep _delay2;
+    };
+    if(!_handled) then { // shouldn't happen, means range is misconfigured
+        ERROR_1("Range event was not handled: %1", str _x);
+        sleep _delay;
+    };
 } foreach _rangeSequence;
 
 SET_RANGE_VAR(rangeInteractable,false);
@@ -202,7 +202,7 @@ sleep 1;
 _rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
 
 if(!isNil "_qualTiers") then {
-	[_this,true] spawn FUNC(updateQuals);
+    [_this,true] spawn FUNC(updateQuals);
 };
 
 SET_RANGE_VAR(rangeActive,false);
@@ -211,40 +211,40 @@ SET_RANGE_VAR(rangeActive,false);
 _possibleScore = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 _shooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
 _laneQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
-{ 
-	_score = _rangeScores select _forEachIndex;
-	
-	_shooter = nil;
-	if(!isNil "_shooters") then {
-		if(count _shooters > _forEachIndex) then {
-			_shooter = _shooters select _forEachIndex;
-		};
-	};
-	
-	if(_score > 0 || !isNil "_shooter") then {
-		_rangeDoneText = format ["%1 - Lane %2: %3/%4", _rangeTitle, _forEachIndex + 1, _score, _possibleScore];
-		
-		if(!isNil "_laneQuals") then {
-			if(count _laneQuals > _forEachIndex) then {
-				_laneQual = _laneQuals select _forEachIndex;
-				if(!isNil "_laneQual") then {
-					_qualText = "No Go";
-					if(_laneQual >= 0) then {
-						_qualText = ((GVAR(scoreTiers) select _laneQual) select 2);
-					};
-
-					_rangeDoneText = _rangeDoneText + format [" (%1)",_qualText];
-				};	
-			};
-		};
-		
-		if(!isNil "_shooter") then {
-			_rangeDoneText = _rangeDoneText + format [" - Shooter: %1", name _shooter];
-		};
-		
-		LOG(_rangeDoneText);
-		[_rangeDoneText] remoteExec ["systemChat", 0];
-	};
+{
+    _score = _rangeScores select _forEachIndex;
+    
+    _shooter = nil;
+    if(!isNil "_shooters") then {
+        if(count _shooters > _forEachIndex) then {
+            _shooter = _shooters select _forEachIndex;
+        };
+    };
+    
+    if(_score > 0 || !isNil "_shooter") then {
+        _rangeDoneText = format ["%1 - Lane %2: %3/%4", _rangeTitle, _forEachIndex + 1, _score, _possibleScore];
+        
+        if(!isNil "_laneQuals") then {
+            if(count _laneQuals > _forEachIndex) then {
+                _laneQual = _laneQuals select _forEachIndex;
+                if(!isNil "_laneQual") then {
+                    _qualText = "No Go";
+                    if(_laneQual >= 0) then {
+                        _qualText = ((GVAR(scoreTiers) select _laneQual) select 2);
+                    };
+                    
+                    _rangeDoneText = _rangeDoneText + format [" (%1)",_qualText];
+                };
+            };
+        };
+        
+        if(!isNil "_shooter") then {
+            _rangeDoneText = _rangeDoneText + format [" - Shooter: %1", name _shooter];
+        };
+        
+        LOG(_rangeDoneText);
+        [_rangeDoneText] remoteExec ["systemChat", 0];
+    };
 } foreach _rangeTargets;
 
 

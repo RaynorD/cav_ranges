@@ -41,8 +41,8 @@ params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_select
 systemChat format ["Target hit: %1", _this];
 
 if(_target animationPhase "terc" == 0 && count _selection > 0 && _direct) then {
-  _objectCtrl = GET_VAR(_target,GVAR(objectCtrl));
-  if(isNil "_objectCtrl") then {NIL_ERROR(_objectCtrl)} else {
+    _objectCtrl = GET_VAR(_target,GVAR(objectCtrl));
+    if(isNil "_objectCtrl") then {NIL_ERROR(_objectCtrl)} else {
     
-  };
+    };
 };
