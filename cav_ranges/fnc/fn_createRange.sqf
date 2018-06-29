@@ -25,20 +25,20 @@ Locality:
 
 Examples:
     [
-        "targets",                         // Mode
-                                        //     "targets" : pop up targets, terc animation is used
-                                        //     "spawn"   : spawned units, targets being alive/dead is used
-        "Pistol Range",                    // Title
-        "r1",                            // Tag
-        1,                                // Lane count
-        10,                                // Targets per lane
+        "targets",  // Mode
+        //     "targets" : pop up targets, terc animation is used
+        //     "spawn"   : spawned units, targets being alive/dead is used
+        "Pistol Range", // Title
+        "r1", // Tag
+        1, // Lane count
+        10, // Targets per lane
         [
-                                        // Range sequence
-                                            // First element defines the type of event:
-                                            //        ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
-                                            //        STRING: Message to show on the lane UI. Third element is not used in this case
-                                            // Second element: seconds length/delay for that event
-                                            // Third element (optional): delay between end of this event and start of the next, default 2 if not present
+            // Range sequence
+                // First element defines the type of event:
+                //        ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
+                //        STRING: Message to show on the lane UI. Third element is not used in this case
+                // Second element: seconds length/delay for that event
+                // Third element (optional): delay between end of this event and start of the next, default 2 if not present
             ["Load a magazine.",5],     //show message for 5 seconds
             ["Range is hot!",3],
             [[1],5],                     // raise first target for 5 seconds
@@ -48,7 +48,7 @@ Examples:
             [[9],5],
             ["Reload.",5],
             ["Range is hot!",3],
-            [[2,7],8],                     // raise targets 2 and 7 for 5 seconds
+            [[2,7],8],           // raise targets 2 and 7 for 5 seconds
             [[1,10],8],
             [[7,4],5],
             [[6,2],5],
@@ -56,13 +56,13 @@ Examples:
             ["Safe your weapon.",3],
             ["Range complete.",0]
         ],
-        nil,                            // target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
-                                        //     a particular target can be in multiple groups
-        [13,11,9],                        // qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
-                                        //     values below the last element will show no go
-                                        //     Not all three are required, [35] would simply return expert above 35, and no go below that
-        true,                            // add instructor actions
-        true,                             // use custom black target texture
+        nil,        // target grouping, nil to disable grouping, otherwise group as define nested arrays: [[0,1],[2,3]] etc
+                    //     a particular target can be in multiple groups
+        [13,11,9],  // qualification tiers, [expert, sharpshooter, marksman], nil to disable qualifications altogether
+                    //     values below the last element will show no go
+                    //     Not all three are required, [35] would simply return expert above 35, and no go below that
+        true,       // add instructor actions
+        true,       // use custom black target texture
     ] spawn cav_ranges_fnc_createRange;
 
 Author:
