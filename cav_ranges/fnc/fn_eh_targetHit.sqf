@@ -2,7 +2,7 @@
 Function: CAV_Ranges_fnc_eh_targetHit
 
 Description:
-	Fired when a target is hit.
+    Fired when a target is hit.
 
 Parameters:
   HitPart Arguments:
@@ -20,17 +20,17 @@ Parameters:
     direct: Boolean - true if object was directly hit, false if it was hit by indirect/splash damage.
 
 Returns:
-	Nothing
+    Nothing
 
 Locality:
-	Client
+    Client
 
 Examples:
     _target addEventHandler ["HitPart", {(_this select 0) spawn FUNC(eh_targetHit)}];
     Note: hitPart returns an array of parts hit, so select 0 is needed.
 
 Author:
-	=7Cav=WO1.Raynor.D
+    =7Cav=WO1.Raynor.D
 
 ---------------------------------------------------------------------------- */
 
