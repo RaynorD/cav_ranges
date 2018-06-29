@@ -138,6 +138,8 @@ for "_i" from 1 to _laneCount do {
         
         // Save ctrl object reference to object for later reference
         SET_VAR_G(_target,GVAR(objectCtrl),_objectCtrl);
+        _hitIndicatorData = [format ["%1 L%2",_rangeTitle,_i], _j];
+        SET_VAR_G(_target,GVAR(hitIndicatorData),_hitIndicatorData);
         
         if(_rangeType == "spawn") then {
             _laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
@@ -234,8 +236,10 @@ switch _rangeType do {
             }, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 
             if(_addInstructorActions) then {
-                private _currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
-                _currentActionPriority = _currentActionPriority - 1;
+                if(isNil QGVAR(currentActionPriority)) then {
+                    GVAR(currentActionPriority) = 250;
+                };
+                GVAR(currentActionPriority) = GVAR(currentActionPriority) + 1;
 
                 player addAction [
                     format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
@@ -245,7 +249,7 @@ switch _rangeType do {
                         SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
                     },
                     _objectCtrl,
-                    _currentActionPriority,
+                    GVAR(currentActionPriority),
                     false,
                     true,
                     "",
@@ -259,7 +263,7 @@ switch _rangeType do {
                         ((_this select 3) select 1) remoteExec [QFUNC(cancelRange),2];
                     },
                     [_objectCtrl,_this],
-                    _currentActionPriority,
+                    GVAR(currentActionPriority),
                     false,
                     true,
                     "",
@@ -267,13 +271,13 @@ switch _rangeType do {
                 ];
 
                 if (_hasHitIndicators) then {
-                    _currentActionPriority = _currentActionPriority + 1;
+                    GVAR(currentActionPriority) = GVAR(currentActionPriority) + 1;
 
                     player addAction [
-                        format ["<t color='#00ff00'>    %1 - Show Hit Indicators</t>",_rangeTitle],
+                        format ["<t color='#00ff00'>        %1 - Show Hit Indicators</t>",_rangeTitle],
                         {(_this select 3) spawn FUNC(hitIndicators)},
                         [_rangeTag, true],
-                        _currentActionPriority,
+                        GVAR(currentActionPriority),
                         false,
                         true,
                         "",
@@ -281,18 +285,16 @@ switch _rangeType do {
                     ];
 
                     player addAction [
-                        format ["<t color='#ff0000'>    %1 - Hide Hit Indicators</t>",_rangeTitle],
+                        format ["<t color='#ff0000'>        %1 - Hide Hit Indicators</t>",_rangeTitle],
                         {(_this select 3) spawn FUNC(hitIndicators)},
                         [_rangeTag, false],
-                        _currentActionPriority,
+                        GVAR(currentActionPriority),
                         false,
                         true,
                         "",
                         format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(hitIndicators), QGVAR(rangeInteractable)] //TODO: convert to framework variable
                     ];
                 };
-
-                SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
             };
         };
 
