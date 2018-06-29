@@ -198,8 +198,9 @@
 #define GET_CTRL(var) ((findDisplay 46) displayCtrl var)
 #define SET_RANGE_VAR(var1,var2) SET_VAR_G(_objectCtrl,GVAR(var1),var2)
 #define SET_RANGE_VAR_X(var1) SET_RANGE_VAR(var1,_##var1)
+#define GET_RANGE_VAR(var1) GET_VAR(_objectCtrl,GVAR(var1))
+#define GET_RANGE_VAR_D(var1,var2) GET_VAR_D(_objectCtrl,GVAR(var1),var2)
 
-#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false],["_useCustomTexture",false]]
 #define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false],["_useCustomTexture",false],["_hasHitIndicators",false]]
 
 #ifdef DEBUG_MODE
