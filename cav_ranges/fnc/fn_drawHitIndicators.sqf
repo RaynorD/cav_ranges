@@ -80,7 +80,5 @@ for "_j" from 0 to (count _thisLaneHits - 1) do {
         _rgba = [1,0.3,0,_alphaMultiplierFirst2];
     };
     
-    _args = [MISSION_ROOT + QUOTE(IMAGE(hitMarker)), _rgba, ASLtoATL (_readout modelToWorld (_thisLaneHits select _j)), _scale, _scale, 0];
-    systemChat str _args;
-    drawIcon3D _args;
+    drawIcon3D [MISSION_ROOT + QUOTE(IMAGE(hitMarker)), _rgba, ASLtoATL (_readout modelToWorld (_thisLaneHits select _j)), _scale, _scale, 0];
 };
