@@ -3,10 +3,13 @@ Function: CAV_Ranges_fnc_drawHitIndicators
 
 Description:
     Draws hit indicators for a range
+    
+Compatible range types:
+    targets
 
 Parameters:
-  
-
+    Readout (object)
+    
 Returns:
     Nothing
 

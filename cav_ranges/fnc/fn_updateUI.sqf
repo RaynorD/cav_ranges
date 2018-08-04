@@ -4,6 +4,9 @@ Function: CAV_Ranges_fnc_updateUI
 Description:
     Updates UI information on clients.
 
+Compatible range types:
+    All
+
 Parameters:
     Tag - Internal prefix used for the range, so it can find range objects [String]
     Element - The UI element that should be updated [String]
@@ -151,9 +154,9 @@ switch (_element) do {
     case "qual" : {
         _idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
         if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
-            _rangeScoreQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
-            _rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-            _shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
+            _rangeScoreQuals = GET_VAR_ARR(_objectCtrl,GVAR(rangeScoreQuals));
+            _rangeScores = GET_VAR_ARR(_objectCtrl,GVAR(rangeScores));
+            _shooterPlayers = GET_VAR_ARR(_objectCtrl,GVAR(rangeShooters));
             if(!isNil "_rangeScoreQuals") then {
                 LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
             };

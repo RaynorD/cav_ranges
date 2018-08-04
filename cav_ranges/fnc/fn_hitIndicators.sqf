@@ -4,6 +4,9 @@ Function: CAV_Ranges_fnc_hitIndicators
 Description:
     Toggles hit indicators for a range
 
+Compatible range types:
+    targets
+
 Parameters:
   rangeTag: String - Range tag for given range
   state: Boolean - whether indicators should be turned on or off
@@ -15,7 +18,7 @@ Locality:
     Client
 
 Examples:
-    [] spawn CAV_Ranges_fnc_hitIndicators;
+    ["rr",true] call CAV_Ranges_fnc_hitIndicators;
 
 Author:
     =7Cav=WO1.Raynor.D

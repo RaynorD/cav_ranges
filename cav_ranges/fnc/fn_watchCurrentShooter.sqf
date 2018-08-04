@@ -5,6 +5,9 @@ Description:
     Checks for a player close to each shooting position and saves it to the ctrl object
     It is only run if ther is a player currently in the trigger
 
+Compatible range types:
+    targets
+
 Parameters (Standard range parameters, see fn_createRange for detailed info):
     Type - Sets mode of operation for the range [String, ["targets","spawn"]]
     Title - String representation of the range [String]
@@ -35,6 +38,7 @@ Author:
 //
 
 DEF_RANGE_PARAMS;
+_rangeArgs params ["_targetCount","_laneCount","_rangeSequence",["_hasHitIndicators",false],["_useCustomTexture",false],["_rangeGrouping",[]]];
 
 LOG_1("watchCurrentShooter: %1", str _this);
 
@@ -51,7 +55,7 @@ while {true} do {
     waitUntil {sleep 3; count list _objectUiTrigger > 0};
     
     while {count list _objectUiTrigger > 0} do {
-        _rangeShooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
+        _rangeShooters = GET_VAR_ARR(_objectCtrl,GVAR(rangeShooters));
         _newShooters = [];
         {
             // get closest player to lane's shooting pos object

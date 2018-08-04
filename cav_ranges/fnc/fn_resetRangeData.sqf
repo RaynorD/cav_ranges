@@ -4,6 +4,10 @@ Function: CAV_Ranges_fnc_resetRangeData
 Description:
     Resets score/UI data for a range.
 
+Compatible range types:
+    targets
+    spawn
+
 Parameters (Standard range parameters, see fn_createRange for detailed info):
     Type - Sets mode of operation for the range [String, ["targets","spawn"]]
     Title - String representation of the range [String]

@@ -5,11 +5,13 @@ class DOUBLES(PREFIX,COMPONENT) //tag
 {
     class COMPONENT //category
     {
+        DEF_FUNC(addInstructorActions);
         DEF_FUNC(cancelRange);
         DEF_FUNC(createRange);
         DEF_FUNC(drawHitIndicators);
         DEF_FUNC(eh_explosion);
         DEF_FUNC(eh_targetHit);
+        DEF_FUNC(initializeTargets);
         DEF_FUNC(hitIndicators);
         DEF_FUNC(playRangeSound);
         DEF_FUNC(updateQuals);

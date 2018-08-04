@@ -201,7 +201,7 @@
 #define GET_RANGE_VAR(var1) GET_VAR(_objectCtrl,GVAR(var1))
 #define GET_RANGE_VAR_D(var1,var2) GET_VAR_D(_objectCtrl,GVAR(var1),var2)
 
-#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false],["_useCustomTexture",false],["_hasHitIndicators",false]]
+#define DEF_RANGE_PARAMS params ["_rangeType","_rangeTitle","_rangeTag","_rangeArgs",["_qualTiers",[]],["_addInstructorActions",true],["_addObjectActions",true],["_hasCivTargets",false]]
 
 #ifdef DEBUG_MODE
     #define LOG_VAR(var1) LOG_2("%1: %2",QUOTE(var1),var1)

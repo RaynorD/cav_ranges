@@ -5,7 +5,10 @@ Description:
     Run on mission postInit.
     
     Currently just sets the qualification tier data, and outputs how long init took.
-    
+
+Compatible range types:
+    All
+
 Parameters:
     None
 
@@ -16,7 +19,7 @@ Returns:
     Nothing
 
 Examples:
-    Called via config
+    Called via config only
     
 
 Author:

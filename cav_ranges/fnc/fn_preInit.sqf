@@ -3,11 +3,10 @@ Function: CAV_Ranges_fnc_postInit
 
 Description:
     Run on mission postInit.
-    
-    Currently just sets a time to use to later calculate mission init time.
-    
-    KK_fnc_trueZoom not used in this version.
-    
+
+Compatible range types:
+    All
+
 Parameters:
     None
 

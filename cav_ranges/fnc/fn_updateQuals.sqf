@@ -5,7 +5,8 @@ Description:
     Stops the sequence for a popup target range.
     Used for both normal and premature end of the sequence.
     
-    Not used for spawn ranges.
+Compatible range types:
+    targets
 
 Parameters:
     Args - (Standard range parameters, see fn_createRange for detailed info):
@@ -53,7 +54,7 @@ if(isNil "_rangeScores") exitWith {NIL_ERROR(_rangeScores)};
 
 if(isNil "_qualTiers") exitWith {LOG_1("%1 qualTiers is nil", _rangeTitle)};
 
-// return qualification tier, need to make this scalable
+// return qualification tier
 _rangeScoreQuals = [];
 {
     if((count _rangeScores) > _forEachIndex) then {

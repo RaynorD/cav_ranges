@@ -4,8 +4,11 @@ Function: CAV_Ranges_fnc_rangeDialog
 Description:
     Initializes a range's dialog on clients.
 
+Compatible range types:
+    targets
+    spawn
+
 Parameters:
-    
     Type - Sets mode of operation for the range [String, ["targets","spawn"]]
     Title - String representation of the range [String]
     Tag - Internal prefix used for the range, so it can find range objects [String]
