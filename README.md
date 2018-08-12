@@ -46,4 +46,4 @@ A real time display shows information about the range, including range instructi
 
 ![range ui](https://i.imgur.com/R9RI2if.png)
 
-
+To get started with the framework, see the [setup guide](https://github.com/RaynorD/cav_ranges/wiki/Basic-Setup).
