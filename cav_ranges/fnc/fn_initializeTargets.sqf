@@ -107,6 +107,14 @@ if (_rangeType in ["targets","spawn"]) then {
             _rangeTargetData pushBack _laneTargetData;
         };
         _rangeTargets pushBack _laneTargets;
+        
+        // civ targets
+        if(_hasCivTargets) then {
+            _civtargets = _hasCivTargets;
+            for [{_i=0},{_civtargets},{_i=_i+1}] do {
+                private _target = missionNamespace getVariable [format["%1_civtarget_l%2_t%3", _rangeTag, _i, _j], objNull];
+            };
+        };
     };
     
     SET_RANGE_VAR(rangeTargets,_rangeTargets);

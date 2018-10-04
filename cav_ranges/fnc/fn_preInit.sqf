@@ -2,7 +2,7 @@
 Function: CAV_Ranges_fnc_postInit
 
 Description:
-    Run on mission postInit.
+    Run on mission preInit.
 
 Compatible range types:
     All
@@ -27,9 +27,6 @@ Author:
 
 #include "..\script_macros.hpp"
 
-LOG("PreInit");
-
-INFO("==========================================================");
 INFO_1("Initializing - Build: %1",QUOTE(PROJECT_VERSION));
 GVAR(loadStartTime) = diag_tickTime;
 

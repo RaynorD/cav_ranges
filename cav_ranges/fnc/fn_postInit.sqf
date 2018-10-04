@@ -3,8 +3,6 @@ Function: CAV_Ranges_fnc_postInit
 
 Description:
     Run on mission postInit.
-    
-    Currently just sets the qualification tier data, and outputs how long init took.
 
 Compatible range types:
     All

@@ -1,7 +1,10 @@
 #include ".\script_mod.hpp"
 
-/* Macros adapted from by the brilliant work at CBA. Give them some love at https://github.com/CBATeam/CBA_A3 */
+#define MISSION_ROOT_COUNT (count (str missionConfigFile select [0,count str missionConfigFile - 15]))
+//#define FILE_PATH [__FILE__,MISSION_ROOT_COUNT] call BIS_fnc_trimString
+#define FILE_PATH __FILE__ select [MISSION_ROOT_COUNT,count __FILE__]
 
+/* Macros adapted from by the brilliant work at CBA. Give them some love at https://github.com/CBATeam/CBA_A3 */
 #define PROJECT_VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define PROJECT_VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
 
@@ -62,7 +65,7 @@
 
 #define LOG_SYS(LEVEL,MESSAGE) diag_log text LOG_SYS_FORMAT(LEVEL,MESSAGE)
 
-#define LOG_SYS_FILELINENUMBERS(LEVEL,MESSAGE) LOG_SYS(LEVEL,format [ARR_4('%1 - %2:%3',MESSAGE,__FILE__,__LINE__ + 1)])
+#define LOG_SYS_FILELINENUMBERS(LEVEL,MESSAGE) LOG_SYS(LEVEL,format [ARR_4('%1 - %2:%3',MESSAGE,FILE_PATH,__LINE__ + 1)])
 
 #define SYS_CHAT(MESSAGE) systemChat format ['(%1) [%2]: %3', toUpper 'PREFIX', toUpper 'COMPONENT', MESSAGE]
 
@@ -149,10 +152,34 @@
 #define ERROR_WITH_TITLE_7(TITLE,MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7) ERROR_WITH_TITLE(TITLE,FORMAT_7(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7))
 #define ERROR_WITH_TITLE_8(TITLE,MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) ERROR_WITH_TITLE(TITLE,FORMAT_8(MESSAGE,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8))
 
+#define ASSERTION_ERROR(MESSAGE) ERROR_WITH_TITLE("Assertion failed!",MESSAGE)
+
+#define ASSERT_TRUE(CONDITION,MESSAGE) \
+    if (not (CONDITION)) then \
+    { \
+        ASSERTION_ERROR('Assertion (CONDITION) failed!\n\n' + (MESSAGE)); \
+    }
+
+#define ASSERT_FALSE(CONDITION,MESSAGE) \
+    if (CONDITION) then \
+    { \
+        ASSERTION_ERROR('Assertion (not (CONDITION)) failed!\n\n' + (MESSAGE)) \
+    }
+    
+#define ASSERT_OP(A,OPERATOR,B,MESSAGE) \
+    if (not ((A) OPERATOR (B))) then \
+    { \
+        ASSERTION_ERROR('Assertion (A OPERATOR B) failed!\n' + 'A: ' + (str (A)) + '\n' + 'B: ' + (str (B)) + "\n\n" + (MESSAGE)); \
+    }
+
+#define ASSERT_DEFINED(VARIABLE,MESSAGE) \
+    if (isNil VARIABLE) then \
+    { \
+        ASSERTION_ERROR('Assertion (VARIABLE is defined) failed!\n\n' + (MESSAGE)); \
+    }
 /* End CBA macros */
 
 /* Start custom macros */
-
 #define SCRIPT(var1) PROJECT\fnc\fn_##var1##.sqf
 #define IMAGE(var1) PROJECT\data\##var1##.paa
 
@@ -184,12 +211,32 @@
 #define GET_ROBJ_L(var1,var2,var3) missionNameSpace getVariable [ARR_2(FORMAT_3("%1_%2_l%3",var1,var2,var3),objNull)]
 #define GET_ROBJ_L_T(var1,var2,var3,var4) missionNameSpace getVariable [ARR_2(FORMAT_4("%1_%2_l%3_t%4",var1,var2,var3,var4),objNull)]
 
-#define TYPE_ERROR(var1) ERROR_2("%1 was wrong type: %2",QUOTE(var1),typeName var1)
-#define TYPE_ERROR_INDEX(var1) ERROR_3("%1-%2 was wrong type: %3",QUOTE(var1),_forEachIndex+1,typeName var1)
+#define TO_BOOL(var) if(var != 0 && var != 1) then { \
+    WARNING_2("%1 (%2) was not a normal bool value (0 or 1)",QUOTE(var),var) \
+}; \
+if(var > 0) then {var = true} else {var = false}
+
+
+#define TYPE_ERROR(var1,type) ERROR_3("%1 was wrong type: %2 (expected %3)",QUOTE(var1),typeName var1,type)
+#define TYPE_ERROR_WITH_TITLE(var1,type,title) ERROR_4("%1 (%2) was wrong type: %3 (expected %4)",QUOTE(var1),title,typeName var1,type)
+#define TYPE_ERROR_INDEX(var1,type) ERROR_3("%1-%2 was wrong type: %3",QUOTE(var1),_forEachIndex+1,typeName var1)
+#define TYPE_ERROR_INDEX_WITH_TITLE(var1,type,title) ERROR_4("%1-%2 (%3) was wrong type: %4",QUOTE(var1),_forEachIndex+1,title,typeName var1)
+
 #define NIL_ERROR(var1) ERROR_1("%1 was nil", QUOTE(var1))
+#define NIL_ERROR_WITH_TITLE(var1,title) ERROR_2("%1 (%2) was nil",QUOTE(var1),title)
 #define NIL_ERROR_INDEX(var1) ERROR_2("%1-%2 was nil", QUOTE(var1),_forEachIndex+1)
 #define BOUNDS_ERROR(var1,var2) ERROR_2("%1: %2 was outside bounds", QUOTE(var1), var2)
 #define BOUNDS_ERROR_INDEX(var1,var2) ERROR_3("%1-%2: %3 was outside bounds", QUOTE(var1), _forEachIndex+1, var2)
+#define CFG_NIL_ERROR(value,parent) ERROR_2("config value %1 in class %2 was nil",QUOTE(value),QUOTE(parent))
+#define CFG_TYPE_ERROR(value,parent,var3,var4) ERROR_4("config value %1 in class %2 was wrong type: got %3, expected %4",QUOTE(value),QUOTE(parent),QUOTE(var3),QUOTE(var4))
+
+#define ASSERT_DEFINED(var,errorVar) if(isNil QUOTE(var)) then {errorVar = true; NIL_ERROR(var)}
+#define ASSERT_TYPE(var,type,errorVar) ASSERT_DEFINED(var); \
+if(typeName var != QUOTE(type)) exitWith {errorVar = true; TYPE_ERROR(var,type)}
+
+#define ASSERT_DEFINED_WITH_TITLE(var,title,errorVar) if(isNil QUOTE(var)) then {errorVar = true; NIL_ERROR_WITH_TITLE(var,title)}
+#define ASSERT_TYPE_WITH_TITLE(var,type,title,errorVar) ASSERT_DEFINED_WITH_TITLE(var,title,errorVar); \
+if(typeName var != QUOTE(type)) then {errorVar = true; TYPE_ERROR_WITH_TITLE(var,QUOTE(type),title)}
 
 //#define ACTION_COND(var1,var2) FORMAT_1(QUOTE(!(((GET_VAR(var1,var2)) select %1) select 7)),_fieldId)
 #define ACTION_COND(var1,var2,var3) FORMAT_3(ARG_2(GET_VAR(%1,%2),%3),var1,var2,var3)
