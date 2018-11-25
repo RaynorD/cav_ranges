@@ -11,12 +11,9 @@
 //} foreach allMissionObjects "TargetP_Inf3_F";
 //
 // grenade range
-{
-	_x addEventHandler ["Explosion", {_this spawn cav_ranges_fnc_eh_explosion}];
-	_x addEventHandler ["HandleDamage", {0}];
-	_x setVariable ["cav_ranges_expDmgThreshold",0.01];
-} foreach allMissionObjects "TargetP_Inf_F";
 
+
+/*
 [
 	"targets", 		//range type
 					//	"targets" : pop up targets, terc animation is used
@@ -93,7 +90,9 @@
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
 	true	// add instructor actions
 ] call cav_ranges_fnc_createRange;
+*/
 
+/*
 [
 	"targets", 		//range type
 	"Grenade Range",	// title text
@@ -116,4 +115,4 @@
 	[8,6,5],	// qualification tiers
 	true,
 	false
-] call cav_ranges_fnc_createRange;
+] call cav_ranges_fnc_createRange;*/
