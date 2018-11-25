@@ -11,7 +11,6 @@ class DOUBLES(PREFIX,COMPONENT) //tag
         DEF_FUNC(drawHitIndicators);
         DEF_FUNC(eh_explosion);
         DEF_FUNC(eh_targetHit);
-        DEF_FUNC(getConfigValue);
         DEF_FUNC(initializeTargets);
         DEF_FUNC(hitIndicators);
         DEF_FUNC(playRangeSound);
