@@ -1,0 +1,48 @@
+global
+    _rangeMode (required, string)
+    _rangeTitle (required, string)
+    _rangeTag (required, string)
+    _rangeArguments (required, array)
+    _qualTiers (optional, array, [])
+    _addInstructorActions (optional, boolean, true)
+    _addObjectActions (optional, boolean, true)
+    _hasCivTargets (optional, boolean, false)
+    
+targets - normal rifle range, popup targets
+    _targetCount (required, integer)
+    _laneCount (required, integer)
+    _rangeSequence (required, array)
+    _hasHitIndicators (optional, boolean, false)
+    _useCustomTexture (optional, boolean, false)
+    _rangeGrouping (optional, array, [])
+
+spawn - AT range
+    _targetCount (required, integer)
+    _laneCount (required, integer)
+
+spawn_moving - static player, spawns live moving targets
+    _laneCount, (required, integer)
+    _rangeSequence (required, array)
+        [
+            [spawn1data],
+            ... more spawns
+        ]
+
+targets_mobile - mobile player, popup targets
+    _targets (required, integer)
+    _useCustomTexture (optional, boolean, false)
+
+spawn_moving_mobile - mobile player, spawn live moving targets
+    _rangeSequence (required, array)
+        [
+            [
+                trigger1,
+                [
+                    [spawn1data],
+                    [spawn2data]
+                    ... more spawns
+                ]
+            ],
+            ... more triggers
+        ]
+    

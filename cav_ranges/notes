@@ -1,0 +1,36 @@
+
+range flags:
+    movingPlayer
+        true: player moves during range
+        false: player stays stationary during range
+        if true
+            detect
+        if false
+            
+    usesPopupTargets (popup/unit)
+        true: uses targets based on TargetBase
+        false: uses live units, infantry or vehicles
+        if true
+            animate target up
+            detect hit
+            animate target down
+        if false
+            create unit
+            if movingTargets
+                move target
+            
+            
+    movingTargets
+    
+    sequence
+        time: [[targets], delay] (current) - activates targets with simple time delay
+        trigger: [[targets], trigger] - activates given target(s) when player enters given rigger
+        none: "none" (targets all up/spawned at start)
+        
+        [type,[sequence]]
+
+rangeTargetData
+    popupTargets
+        [list targets]
+    liveTargets
+        [type, spawnPosition, ([])]
