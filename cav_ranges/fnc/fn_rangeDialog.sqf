@@ -15,7 +15,7 @@ Parameters:
 	Grouping - target groupings [Array of Arrays of Numbers]
 	Qualification Tiers - number of targets to attain each qual [Array of Integers]
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -55,7 +55,7 @@ _uiW = safeZoneW * 0.2;
 _uiH = safeZoneH * 0.12;
 
 // animation time for dialog to slide in/out
-_animTime = 0.5;
+_animTime = 1;
 
 _rangeLanes = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 
@@ -65,14 +65,23 @@ while{true} do {
 	// wait until player enters the trigger area for this range
 	waitUntil {sleep 1; player in list _objectUiTrigger};
 	
-	_idc = 78918;
+	INFO_1("Entered %1",_rangeTitle);
+	
+	// If player teleported between ranges, wait until previous UI has finished being destroyed
+	waitUntil {sleep 0.1; !(GET_VAR_D(player,GVAR(rangeDialogShown),false))};
+	// prevent other UIs from opening until this one is destroyed
+	SET_VAR_G(player,GVAR(rangeDialogShown),true);
+	
+	LOG_1("Start showing %1 UI",_rangeTitle);
+
+	_idc = IDC_ROOT;
 	
 	_laneControls = [];
 	_mainCtrls = [];
 	
 	// Control group which all controls live inside
 	// This is so the dialog can be moved
-	_ctrlGroup = (findDisplay 46) ctrlCreate ["RscControlsGroup", _idc]; 
+	_ctrlGroup = (findDisplay 46) ctrlCreate ["RscControlsGroup", _idc];
 	_ctrlGroup ctrlSetPosition [_uiX0, _uiY, _uiW, _uiH];
 	_ctrlGroup ctrlCommit 0;
 	_mainCtrls pushBack _idc;
@@ -221,8 +230,8 @@ while{true} do {
 				_shooter = _shooters select _forEachIndex;
 				if(!isNil "_shooter") then {
 					_txtShooter ctrlSetStructuredText parseText format [
-						"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
-						_vertTxtPad, 
+						"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>",
+						_vertTxtPad,
 						_shooter
 					];
 				};
@@ -266,11 +275,16 @@ while{true} do {
 	
 	// delete controls
 	{
-		ctrlDelete GET_CTRL(_x); 
+		ctrlDelete GET_CTRL(_x);
 	} foreach _mainCtrls;
 	{
 		{
-			ctrlDelete GET_CTRL(_x); 
+			ctrlDelete GET_CTRL(_x);
 		} foreach _x;
 	} foreach _laneControls;
+	
+	LOG_1("Finished hiding %1 UI",_rangeTitle);
+	
+	// Tell other range dialogs that they can start constructing
+	SET_VAR_G(player,GVAR(rangeDialogShown),false);
 };

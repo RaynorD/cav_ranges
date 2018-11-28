@@ -14,7 +14,7 @@ Parameters:
 Locality:
 	Server
 	
-Returns: 
+Returns:
 	True - so that target is not actually damaged
 
 Examples:

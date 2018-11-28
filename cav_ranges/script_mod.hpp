@@ -6,3 +6,5 @@
 #include ".\build.hpp"
 
 #define DEBUG_MODE 1
+
+#define IDC_ROOT 789187
