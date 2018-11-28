@@ -41,8 +41,12 @@ DEF_RANGE_PARAMS;
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
 if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null: %3",_rangeTag,"ctrl",_this)};
 
-_text = format ["%1 cancelled", _rangeTitle];
+_activator = GET_VAR(_objectCtrl,GVAR(rangeActivator));
+
+_text = format ["%1 cancelled %2", name _activator, _rangeTitle];
 _text remoteExec ["systemChat"];
+
+LOG_1("%1 cancelled %2",name _activator,_rangeTitle);
 
 terminate (GET_VAR(_objectCtrl,GVAR(sequenceHandle)));
 
