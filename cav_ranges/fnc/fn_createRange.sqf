@@ -16,6 +16,7 @@ Parameters:
 	Grouping - target groupings [Array of Arrays of Numbers]
 	Qualification Tiers - number of targets to attain each qual [Array of Integers]
 	Add Instructor Actions - whether to add player-bound actions to start/stop range [Boolean]
+	Lane Colors - Colors that each lane's targets are set to
 
 Returns: 
 	Nothing
@@ -100,6 +101,15 @@ if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
 _rangeTargets = [];
 _rangeTargetData = [];
 
+_doLaneColors = false;
+if(count _laneColors > 0) then {
+	if (count _laneColors == _laneCount) then {
+		_doLaneColors = true;
+	} else {
+		ERROR_3("%1 lane color count (%2) doesn't match lane count (%3)",_rangeTitle,count _laneColors,_laneCount);
+	};
+};
+
 // iterate targets making sure they exist and save to array
 // if spawn mode, save target data (type, position, direction)
 for "_i" from 1 to _laneCount do {
@@ -113,6 +123,22 @@ for "_i" from 1 to _laneCount do {
 		_laneTargets pushBack _target;
 		
 		if(_rangeType == "spawn") then {
+			if(_doLaneColors) then {
+				_thisLaneColor = _laneColors select (_i - 1);
+				if(count _thisLaneColor < 4) then {
+					ERROR_4("%1 lane %2 color doesn't have correct number of elements (%3): %4",_rangeTitle,_i,count _thisLaneColor,_thisLaneColor)
+				} else {
+					_target setObjectTextureGlobal [0,
+						format [
+							"#(rgb,8,8,3)color(%1,%2,%3,%4)",
+							_thisLaneColor select 0,
+							_thisLaneColor select 1,
+							_thisLaneColor select 2,
+							_thisLaneColor select 3
+						]
+					];
+				};
+			};
 			_laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
 		} else {
 			if(isServer) then {
@@ -263,8 +289,8 @@ switch _rangeType do {
 			
 			LOG_1("rangeScores: %1",_this);
 			//begin main loop
-			[_this,_objectCtrl] spawn {
-				params ["_args","_objectCtrl"];
+			[_this,_objectCtrl,_doLaneColors] spawn {
+				params ["_args","_objectCtrl","_doLaneColors"];
 				_args DEF_RANGE_PARAMS;
 				
 				while{true} do {
@@ -307,6 +333,23 @@ switch _rangeType do {
 								// create vehicle and set direction
 								_newTarget = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
 								_newTarget setVectorDirAndUp _vectorDirAndUp;
+								
+								if(_doLaneColors) then {
+									_thisLaneColor = _laneColors select _laneIndex;
+									if(count _thisLaneColor < 4) then {
+										ERROR_4("%1 lane %2 color doesn't have correct number of elements (%3): %4",_rangeTitle,_laneIndex,count _thisLaneColor,_thisLaneColor)
+									} else {
+										_newTarget setObjectTextureGlobal [0,
+											format [
+												"#(rgb,8,8,3)color(%1,%2,%3,%4)",
+												_thisLaneColor select 0,
+												_thisLaneColor select 1,
+												_thisLaneColor select 2,
+												_thisLaneColor select 3
+											]
+										];
+									};
+								};
 								
 								// globalize new object as the correct name
 								_name = format["%1_target_l%2_t%3", _rangeTag, _laneIndex + 1, _forEachIndex + 1];
