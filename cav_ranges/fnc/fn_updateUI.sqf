@@ -45,7 +45,10 @@ if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %
 //if(!(player in list _objectUiTrigger)) exitWith {LOG("Not in trigger");};
 
 _idcGroup = GET_VAR(_objectCtrl,GVAR(idcGroup));
-if(isNil "_idcGroup") exitWith {NIL_ERROR(_idcGroup)};
+if(isNil "_idcGroup") exitWith {
+	// If spawning in a trigger this will error, ignore
+	//NIL_ERROR(_idcGroup)
+};
 _ctrlGroup = GET_CTRL(_idcGroup);
 _ctrlGroupPos = ctrlPosition _ctrlGroup;
 _vertTxtPad = 0.2;
