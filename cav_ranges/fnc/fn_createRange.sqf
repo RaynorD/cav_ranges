@@ -276,6 +276,27 @@ switch _rangeType do {
 			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
 		}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 		
+		if(_addInstructorActions) then {
+			_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
+			_currentActionPriority = _currentActionPriority - 1;
+			
+			player addAction [
+				format ["<t color='#00ff00'>    %1 - Reset</t>",_rangeTitle],
+				{
+					SET_VAR_G((_this select 3),GVAR(rangeReset),true);
+					SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
+				},
+				_objectCtrl,
+				_currentActionPriority,
+				false,
+				true,
+				"",
+				format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false])", _objectCtrl, QGVAR(rangeInteractable)] //TODO: convert to framework variable
+			];
+			
+			SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
+		};
+		
 		if(isServer) then {
 			SET_RANGE_VAR(rangeScorePossible,count (_rangeTargets select 0));
 			
