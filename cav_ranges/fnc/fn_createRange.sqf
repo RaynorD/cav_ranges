@@ -320,6 +320,7 @@ switch _rangeType do {
 						LOG_1("Resetting %1",_rangeTitle);
 						
 						// first iterates to delete all targets that remain
+						_deletedTargets = 0;
 						_rangeTargets = GET_VAR(_objectCtrl,GVAR(rangeTargets));
 						{
 							_targets = _x;
@@ -327,10 +328,11 @@ switch _rangeType do {
 								_target = _x;
 								if(!isNil "_target") then {
 									deleteVehicle _target;
-									systemchat format ["deleting target %1",_target];
+									_deletedTargets = _deletedTargets + 1;
 								};
 							} foreach _targets;
 						} foreach _rangeTargets;
+						LOG_1("Deleting %1 targets",_deletedTargets);
 						
 						// give time for vehicles to fully delete
 						sleep 2;
