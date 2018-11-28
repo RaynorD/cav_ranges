@@ -11,7 +11,7 @@ Parameters:
 		(not used, data is always saved to object namespace first for players that
 		enter the range trigger to read)
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -42,7 +42,7 @@ if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null:
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
 if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
-if(!(player in list _objectUiTrigger)) exitWith {LOG("Not in trigger");};
+//if(!(player in list _objectUiTrigger)) exitWith {LOG("Not in trigger");};
 
 _idcGroup = GET_VAR(_objectCtrl,GVAR(idcGroup));
 if(isNil "_idcGroup") exitWith {NIL_ERROR(_idcGroup)};
@@ -60,7 +60,7 @@ switch (_element) do {
 			_rangeMessage = GET_VAR(_objectCtrl,GVAR(rangeMessage));
 			
 			if(!isNil "_rangeMessage") then {
-				LOG_2("UpdateUI: %1 - %2",_this,_rangeMessage);
+				//LOG_2("UpdateUI: %1 - %2",_this,_rangeMessage);
 				if(typeName _rangeMessage != "ARRAY") then {TYPE_ERROR(_rangeMessage)} else {
 					if(count _rangeMessage > 0) then {
 						_text = _rangeMessage select 0;
@@ -112,9 +112,9 @@ switch (_element) do {
 		_scorePossible = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-		if(!isNil "_rangeScores") then {
-			LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
-		};
+		//if(!isNil "_rangeScores") then {
+		//	LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
+		//};
 		
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			{
@@ -154,9 +154,9 @@ switch (_element) do {
 			_rangeScoreQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 			_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
 			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
-			if(!isNil "_rangeScoreQuals") then {
-				LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
-			};
+			//if(!isNil "_rangeScoreQuals") then {
+			//	LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
+			//};
 			
 			{
 				_idcQual = _x select 2;
@@ -211,7 +211,7 @@ switch (_element) do {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
-			LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
+			//LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
 			
 			if(!isNil "_shooterPlayers") then {
 				{
@@ -233,8 +233,8 @@ switch (_element) do {
 						};
 						
 						GET_CTRL(_idcShooter) ctrlSetStructuredText parseText format [
-							"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>", 
-							_vertTxtPad, 
+							"<t size='%1'>&#160;</t><br/><t align='right'>%2</t>",
+							_vertTxtPad,
 							_shooterText
 						];
 					};
