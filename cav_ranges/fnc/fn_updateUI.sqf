@@ -63,7 +63,7 @@ switch (_element) do {
 			_rangeMessage = GET_VAR(_objectCtrl,GVAR(rangeMessage));
 			
 			if(!isNil "_rangeMessage") then {
-				//LOG_2("UpdateUI: %1 - %2",_this,_rangeMessage);
+				LOG_2("UpdateUI: %1 - %2",_this,_rangeMessage);
 				if(typeName _rangeMessage != "ARRAY") then {TYPE_ERROR(_rangeMessage)} else {
 					if(count _rangeMessage > 0) then {
 						_text = _rangeMessage select 0;
@@ -115,9 +115,9 @@ switch (_element) do {
 		_scorePossible = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
-		//if(!isNil "_rangeScores") then {
-		//	LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
-		//};
+		if(!isNil "_rangeScores") then {
+			LOG_2("UpdateUI: %1 - %2",_this,_rangeScores);
+		};
 		
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			{
@@ -157,9 +157,9 @@ switch (_element) do {
 			_rangeScoreQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 			_rangeScores = GET_VAR(_objectCtrl,GVAR(rangeScores));
 			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
-			//if(!isNil "_rangeScoreQuals") then {
-			//	LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
-			//};
+			if(!isNil "_rangeScoreQuals") then {
+				LOG_2("UpdateUI: %1 - %2",_this,_rangeScoreQuals);
+			};
 			
 			{
 				_idcQual = _x select 2;
@@ -214,7 +214,7 @@ switch (_element) do {
 		_idcLanes = GET_VAR(_objectCtrl,GVAR(idcLanes));
 		if(isNil "_idcLanes") then {NIL_ERROR(_idcLanes)} else {
 			_shooterPlayers = GET_VAR(_objectCtrl,GVAR(rangeShooters));
-			//LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
+			LOG_2("UpdateUI: %1 - %2",_this,_shooterPlayers);
 			
 			if(!isNil "_shooterPlayers") then {
 				{

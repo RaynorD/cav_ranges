@@ -253,8 +253,11 @@ while{true} do {
 	// wait for animation to finish
 	sleep _animTime;
 	
+	LOG_1("Finished showing %1 UI",_rangeTitle);
+	
 	// wait until player leaves the range trigger
 	waitUntil {sleep 1; !(player in list _objectUiTrigger)};
+	LOG_1("Start hiding %1 UI",_rangeTitle);
 	
 	// slide dialog off screen
 	_ctrlGroup ctrlSetPosition [_uiX0, _uiY, _uiW, _uiH];
