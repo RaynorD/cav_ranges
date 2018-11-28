@@ -29,9 +29,9 @@ Author:
 
 params [["_target",objNull],["_damage",0]];
 
-_text = format ["%1 - %2", _target, _damage];
-systemChat _text;
-LOG(_text);
+//_text = format ["%1 - %2", _target, _damage];
+//systemChat _text;
+//LOG(_text);
 
 // ignore damage below threshold
 // check global, then object namespace, then default
