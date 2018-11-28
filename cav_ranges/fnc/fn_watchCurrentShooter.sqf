@@ -15,7 +15,7 @@ Parameters (Standard range parameters, see fn_createRange for detailed info):
 	Grouping - target groupings [Array of Arrays of Numbers]
 	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -31,8 +31,8 @@ Author:
 
 #include "..\script_macros.hpp"
 
-// When a player is present in the range trigger, 
-// 
+// When a player is present in the range trigger,
+//
 
 DEF_RANGE_PARAMS;
 
@@ -57,7 +57,7 @@ while {true} do {
 			// get closest player to lane's shooting pos object
 			_shootingPos = GET_ROBJ_L(_rangeTag,"shootingPos",(_forEachIndex + 1));
 			if(isNull _shootingPos) exitWith {ERROR_2("Shooting pos (%1) is null: %2", FORMAT_3("%1_%2_l%3",_rangeTag,"shootingPos",(_forEachIndex + 1)), _this)};
-			_shooter = ((_shootingPos nearEntities ["Man", 1.5]) select 0);
+			_shooter = ((_shootingPos nearEntities ["Man", 2.5]) select 0);
 			if(!isNil "_shooter") then {
 				if(typeName _shooter != "OBJECT") then {TYPE_ERROR(_shooter)} else {
 					_newShooters set [_forEachIndex, _shooter];
