@@ -71,6 +71,7 @@ while{true} do {
 	waitUntil {sleep 0.1; !(GET_VAR_D(player,GVAR(rangeDialogShown),false))};
 	// prevent other UIs from opening until this one is destroyed
 	SET_VAR_G(player,GVAR(rangeDialogShown),true);
+	SET_VAR_G(player,GVAR(rangeDialogTag),_rangeTag);
 	
 	LOG_1("Start showing %1 UI",_rangeTitle);
 
@@ -287,4 +288,5 @@ while{true} do {
 	
 	// Tell other range dialogs that they can start constructing
 	SET_VAR_G(player,GVAR(rangeDialogShown),false);
+	SET_VAR_G(player,GVAR(rangeDialogTag),nil);
 };

@@ -34,6 +34,14 @@ if(!hasInterface) exitWith {};
 
 params ["_rangeTag","_element",["_showNoGo",true]];
 
+_currentRange = GET_VAR(player,GVAR(rangeDialogTag));
+if (isNil "_currentRange") exitWith {
+	LOG_2("Ignoring UpdateUI call for range %1, currently not in a range",_rangeTag);
+};
+if(!(_currentRange isEqualTo _rangeTag)) exitWith {
+	LOG_2("Ignoring UpdateUI call for range %1, currently in range %2",_rangeTag,_currentRange);
+};
+
 //SYSCHAT_VAR(_this);
 
 _objectCtrl = GET_ROBJ(_rangeTag,"ctrl");
@@ -124,7 +132,7 @@ switch (_element) do {
 				_idcScore = _x select 1;
 				if(isNil "_idcScore") then {NIL_ERROR_INDEX(_idcScore)} else {
 					_scoreText = ["-","-"];
-
+					
 					if(!isNil "_rangeScores") then {
 						
 						if(typeName _rangeScores != "ARRAY") then {TYPE_ERROR_INDEX(_rangeScores)} else {
