@@ -2,9 +2,9 @@
 Function: CAV_Ranges_fnc_createRange
 
 Description:
-	Builds the range with user provided values. 
+	Builds the range with user provided values.
 	
-	This would be the only "public" scope function. 
+	This would be the only "public" scope function.
 
 Parameters:
 	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
@@ -18,7 +18,7 @@ Parameters:
 	Add Instructor Actions - whether to add player-bound actions to start/stop range [Boolean]
 	Lane Colors - Colors that each lane's targets are set to
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -33,7 +33,7 @@ Examples:
 		"r1",							// Tag
 		1,								// Lane count
 		10,								// Targets per lane
-		[				
+		[
 										// Range sequence
 											// First element defines the type of event:
 											//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
@@ -76,6 +76,7 @@ Author:
 
 // Run on both server and clients at mission init
 
+//["_rangeType","_rangeTitle","_rangeTag","_laneCount","_targetCount","_rangeSequence",["_rangeGrouping",[]],"_qualTiers",["_addInstructorActions",false],["_useCustomTexture",false],["_laneColors",[]]]
 DEF_RANGE_PARAMS;
 
 LOG_1("CreateRange: %1",_rangeTitle);
@@ -90,74 +91,77 @@ if(isNull _objectCtrl) exitWith {ERROR_3("Range control object (%1_%2) was null:
 _objectUiTrigger = GET_ROBJ(_rangeTag,"trg");
 if(isNull _objectUiTrigger) exitWith {ERROR_3("Range trigger (%1_%2) was null: %3",_rangeTag,"trg",_this)};
 
-SET_RANGE_VAR(rangeActive,false);
-SET_RANGE_VAR(rangeInteractable,true);
-
-// if the control object is a signpost, use 7Cav image
-if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
-	_objectCtrl setObjectTexture [0, QUOTE(IMAGE(7th))];
-};
-
 _rangeTargets = [];
-_rangeTargetData = [];
-
 _doLaneColors = false;
-if(count _laneColors > 0) then {
-	if (count _laneColors == _laneCount) then {
-		_doLaneColors = true;
-	} else {
-		ERROR_3("%1 lane color count (%2) doesn't match lane count (%3)",_rangeTitle,count _laneColors,_laneCount);
-	};
-};
 
-// iterate targets making sure they exist and save to array
-// if spawn mode, save target data (type, position, direction)
-for "_i" from 1 to _laneCount do {
-	_laneTargets = [];
-	_laneTargetData = [];
-	for "_j" from 1 to _targetCount do {
-		_target = missionNamespace getVariable [format["%1_target_l%2_t%3", _rangeTag, _i, _j], objNull];
-		if(isNull _target) then {
-			ERROR_1("Range target is null: %1",FORMAT_3("%1_target_l%2_t%3",_rangeTag,_i,_j));
-		};
-		_laneTargets pushBack _target;
-		
-		if(_rangeType == "spawn") then {
-			if(_doLaneColors) then {
-				_thisLaneColor = _laneColors select (_i - 1);
-				if(count _thisLaneColor < 4) then {
-					ERROR_4("%1 lane %2 color doesn't have correct number of elements (%3): %4",_rangeTitle,_i,count _thisLaneColor,_thisLaneColor)
-				} else {
-					_target setObjectTextureGlobal [0,
-						format [
-							"#(rgb,8,8,3)color(%1,%2,%3,%4)",
-							_thisLaneColor select 0,
-							_thisLaneColor select 1,
-							_thisLaneColor select 2,
-							_thisLaneColor select 3
-						]
-					];
-				};
-			};
-			_laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
+if(isServer) then {
+	SET_RANGE_VAR(rangeActive,false);
+	SET_RANGE_VAR(rangeInteractable,true);
+	
+	// if the control object is a signpost, use 7Cav image
+	if(typeOf _objectCtrl in ["Land_InfoStand_V1_F", "Land_InfoStand_V2_F"]) then {
+		_objectCtrl setObjectTextureGlobal [0, QUOTE(IMAGE(7th))];
+	};
+	
+	_rangeTargetData = [];
+	
+	if(count _laneColors > 0) then {
+		if (count _laneColors == _laneCount) then {
+			_doLaneColors = true;
 		} else {
-			if(isServer) then {
-				if(_target isKindOf "TargetP_Inf_F" && _useCustomTexture) then {
-					_target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+			ERROR_3("%1 lane color count (%2) doesn't match lane count (%3)",_rangeTitle,count _laneColors,_laneCount);
+		};
+	};
+	
+	// iterate targets making sure they exist and save to array
+	// if spawn mode, save target data (type, position, direction)
+	for "_i" from 1 to _laneCount do {
+		_laneTargets = [];
+		_laneTargetData = [];
+		for "_j" from 1 to _targetCount do {
+			_target = missionNamespace getVariable [format["%1_target_l%2_t%3", _rangeTag, _i, _j], objNull];
+			if(isNull _target) then {
+				ERROR_1("Range target is null: %1",FORMAT_3("%1_target_l%2_t%3",_rangeTag,_i,_j));
+			};
+			_laneTargets pushBack _target;
+			
+			if(_rangeType == "spawn") then {
+				if(_doLaneColors) then {
+					_thisLaneColor = _laneColors select (_i - 1);
+					if(count _thisLaneColor < 4) then {
+						ERROR_4("%1 lane %2 color doesn't have correct number of elements (%3): %4",_rangeTitle,_i,count _thisLaneColor,_thisLaneColor)
+					} else {
+						_target setObjectTextureGlobal [0,
+							format [
+								"#(rgb,8,8,3)color(%1,%2,%3,%4)",
+								_thisLaneColor select 0,
+								_thisLaneColor select 1,
+								_thisLaneColor select 2,
+								_thisLaneColor select 3
+							]
+						];
+					};
+				};
+				_laneTargetData pushBack [typeOf _target, getPos _target, [vectorDir _target,vectorUp _target]];
+			} else {
+				if(isServer) then {
+					if(_target isKindOf "TargetP_Inf_F" && _useCustomTexture) then {
+						_target setObjectTextureGlobal [0, QUOTE(IMAGE(target))];
+					};
 				};
 			};
 		};
+		if(_rangeType == "spawn") then {
+			_rangeTargetData pushBack _laneTargetData;
+		};
+		_rangeTargets pushBack _laneTargets;
 	};
+	
+	SET_RANGE_VAR(rangeTargets,_rangeTargets);
+	
 	if(_rangeType == "spawn") then {
-		_rangeTargetData pushBack _laneTargetData;
+		SET_RANGE_VAR(rangeTargetData,_rangeTargetData);
 	};
-	_rangeTargets pushBack _laneTargets;
-};
-
-SET_RANGE_VAR(rangeTargets,_rangeTargets);
-
-if(_rangeType == "spawn") then {
-	SET_RANGE_VAR(rangeTargetData,_rangeTargetData);
 };
 
 if(!isDedicated) then {
@@ -170,85 +174,89 @@ if(isServer) then {
 	_this spawn FUNC(watchCurrentShooter);
 };
 
-if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
-	if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
-		SET_VAR(player,GVAR(rangeControlsAdded),true);
-		player addAction [
-			"<t color='#00ff00'>Open Range Controls</t>",
-			{player setVariable ['Cav_showRangeActions',true]},
-			nil,
-			0,
-			false,
-			false,
-			"",
-			"!(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
-		];
-		
-		player addAction [
-			"<t color='#ff0000'>Collapse Range Controls</t>",
-			{player setVariable ['Cav_showRangeActions',false]},
-			nil,
-			250,
-			false,
-			true,
-			"",
-			"(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
-		];
+if(hasInterface) then {
+	if(GET_VAR_D(player,GVAR(instructor),false) && _addInstructorActions) then {
+		if(isNil {GET_VAR(player,GVAR(rangeControlsAdded))}) then {
+			SET_VAR(player,GVAR(rangeControlsAdded),true);
+			player addAction [
+				"<t color='#00ff00'>Open Range Controls</t>",
+				{player setVariable ['Cav_showRangeActions',true]},
+				nil,
+				0,
+				false,
+				false,
+				"",
+				"!(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
+			];
+			
+			player addAction [
+				"<t color='#ff0000'>Collapse Range Controls</t>",
+				{player setVariable ['Cav_showRangeActions',false]},
+				nil,
+				250,
+				false,
+				true,
+				"",
+				"(player getVariable ['Cav_showRangeActions',false])" //TODO: convert to framework variable
+			];
+		};
 	};
 };
 
 switch _rangeType do {
 	// popup targets are used, "terc" animation
 	case "targets" : {
-		if(GET_VAR_D(player,GVAR(instructor),false)) then {
-			_objectCtrl addAction ["Start Range", {
-				SET_VAR_G((_this select 0),GVAR(rangeActive),true);
-				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-			}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			_objectCtrl addAction ["Stop Range", {
-				SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
-				(_this select 3) remoteExec [QFUNC(cancelRange),2];
-			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			// reset range UI after running the course
-			_objectCtrl addAction ["Reset Range Data", {
-				(_this select 3) spawn FUNC(resetRangeData);
-			}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-			
-			if(_addInstructorActions) then {
-				_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
-				_currentActionPriority = _currentActionPriority - 1;
+		if(hasInterface) then {
+			if(GET_VAR_D(player,GVAR(instructor),false)) then {
+				_objectCtrl addAction ["Start Range", {
+					SET_VAR_G((_this select 0),GVAR(rangeActive),true);
+					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+					SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+				}, nil, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+				_objectCtrl addAction ["Stop Range", {
+					SET_VAR_G((_this select 0),GVAR(rangeActivator),(_this select 1));
+					(_this select 3) remoteExec [QFUNC(cancelRange),2];
+				}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
+				// reset range UI after running the course
+				_objectCtrl addAction ["Reset Range Data", {
+					(_this select 3) spawn FUNC(resetRangeData);
+				}, _this, 1.5, true, true, "", QUOTE(!(GET_VAR_D(_target,QGVAR(rangeActive),false)) && (GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 				
-				player addAction [
-					format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
-					{
-						SET_VAR_G((_this select 3),GVAR(rangeActive),true);
-						SET_VAR_G((_this select 3),GVAR(rangeActivator),(_this select 1));
-						SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
-					},
-					_objectCtrl,
-					_currentActionPriority,
-					false,
-					true,
-					"",
-					format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
-				];
-				
-				player addAction [
-					format ["<t color='#ff0000'>    %1 - Stop</t>",_rangeTitle],
-					{
-						SET_VAR_G(((_this select 3) select 0),GVAR(rangeActivator),(_this select 1));
-						((_this select 3) select 1) remoteExec [QFUNC(cancelRange),2];
-					},
-					[_objectCtrl,_this],
-					_currentActionPriority,
-					false,
-					true,
-					"",
-					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
-				];
-				
-				SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
+				if(_addInstructorActions) then {
+					_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
+					_currentActionPriority = _currentActionPriority - 1;
+					
+					player addAction [
+						format ["<t color='#00ff00'>    %1 - Start</t>",_rangeTitle],
+						{
+							SET_VAR_G((_this select 3),GVAR(rangeActive),true);
+							SET_VAR_G((_this select 3),GVAR(rangeActivator),(_this select 1));
+							SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
+						},
+						_objectCtrl,
+						_currentActionPriority,
+						false,
+						true,
+						"",
+						format ["(player getVariable ['Cav_showRangeActions',false]) && !(%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+					];
+					
+					player addAction [
+						format ["<t color='#ff0000'>    %1 - Stop</t>",_rangeTitle],
+						{
+							SET_VAR_G(((_this select 3) select 0),GVAR(rangeActivator),(_this select 1));
+							((_this select 3) select 1) remoteExec [QFUNC(cancelRange),2];
+						},
+						[_objectCtrl,_this],
+						_currentActionPriority,
+						false,
+						true,
+						"",
+						format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false]) && (%1 getVariable ['%3', false])", _objectCtrl, QGVAR(rangeActive), QGVAR(rangeInteractable)] //TODO: convert to framework variable
+					];
+					
+					SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
+				};
 			};
 		};
 		
@@ -271,30 +279,32 @@ switch _rangeType do {
 	
 	// targets are killed, like an AT range
 	case "spawn" : {
-		_objectCtrl addAction ["Reset Range", {
-			SET_VAR_G((_this select 0),GVAR(rangeReset),true);
-			SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
-		}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
-		
-		if(_addInstructorActions) then {
-			_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
-			_currentActionPriority = _currentActionPriority - 1;
+		if (hasInterface) then {
+			_objectCtrl addAction ["Reset Range", {
+				SET_VAR_G((_this select 0),GVAR(rangeReset),true);
+				SET_VAR_G((_this select 0),GVAR(rangeInteractable),false);
+			}, _this, 1.5, true, true, "", QUOTE((GET_VAR_D(_target,QGVAR(rangeInteractable),false))), 5];
 			
-			player addAction [
-				format ["<t color='#00ff00'>    %1 - Reset</t>",_rangeTitle],
-				{
-					SET_VAR_G((_this select 3),GVAR(rangeReset),true);
-					SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
-				},
-				_objectCtrl,
-				_currentActionPriority,
-				false,
-				true,
-				"",
-				format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false])", _objectCtrl, QGVAR(rangeInteractable)] //TODO: convert to framework variable
-			];
-			
-			SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
+			if(_addInstructorActions) then {
+				_currentActionPriority = GET_VAR_D(player,GVAR(currentActionPriority),250);
+				_currentActionPriority = _currentActionPriority - 1;
+				
+				player addAction [
+					format ["<t color='#00ff00'>    %1 - Reset</t>",_rangeTitle],
+					{
+						SET_VAR_G((_this select 3),GVAR(rangeReset),true);
+						SET_VAR_G((_this select 3),GVAR(rangeInteractable),false);
+					},
+					_objectCtrl,
+					_currentActionPriority,
+					false,
+					true,
+					"",
+					format ["(player getVariable ['Cav_showRangeActions',false]) && (%1 getVariable ['%2', false])", _objectCtrl, QGVAR(rangeInteractable)] //TODO: convert to framework variable
+				];
+				
+				SET_VAR(player,GVAR(currentActionPriority),_currentActionPriority);
+			};
 		};
 		
 		if(isServer) then {
@@ -419,7 +429,7 @@ switch _rangeType do {
 									if(!(alive _target) || !(canMove _target)) then {
 										_laneScore = _laneScore + 1;
 									};
-								};						
+								};
 							} foreach _targets;
 							_rangeScores pushBack _laneScore;
 						} foreach _rangeTargets;
