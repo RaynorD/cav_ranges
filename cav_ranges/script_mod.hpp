@@ -2,7 +2,7 @@
 #define COMPONENT ranges
 #define MAJOR 2
 #define MINOR 1
-#define PATCHLVL 0
+#define PATCHLVL 1
 #include ".\build.hpp"
 
 #define DEBUG_MODE 1
