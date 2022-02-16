@@ -8,38 +8,38 @@
 	objects in an organized manner, without some list somewhere that has to be
 	updated if target or lane count is changed.
 	
-	Consider the naming syntax for a target on an example range: 
+	Consider the naming syntax for a target on an example range:
 	r1_target_l3_t7
 	
-	The first element in the object name, "r1", is the range tag of the range. 
-	This naming syntax is the purpose of the range tag. 
+	The first element in the object name, "r1", is the range tag of the range.
+	This naming syntax is the purpose of the range tag.
 	
-	The second element, "target", indicates the function of the object on the range. 
+	The second element, "target", indicates the function of the object on the range.
 	This has to be one of several specific strings:
-		"ctrl" - The control or "brain" object for the range. This object is what 
-			the actions to control the range are added to, and is also used to 
-			store script variables. There is only one ctrl object per range. 
-			It can be any kind of object, but I'd recommend something that 
+		"ctrl" - The control or "brain" object for the range. This object is what
+			the actions to control the range are added to, and is also used to
+			store script variables. There is only one ctrl object per range.
+			It can be any kind of object, but I'd recommend something that
 			indicates interaction. Location does not matter.
-		"trg" - A trigger encompassing the whole area that players may occupy while 
-			using or observing the range. When a player enters this trigger, the 
-			UI showing that range's info will appear. There is only one trigger 
+		"trg" - A trigger encompassing the whole area that players may occupy while
+			using or observing the range. When a player enters this trigger, the
+			UI showing that range's info will appear. There is only one trigger
 			per range. The trigger must be set to activation:any player, activation type:present,
 			and repeatable:true. Don't overlap triggers for different ranges, otherwise
 			multiple UIs could try to open at once and the timespace continuum may implode.
 		"shootingPos" - Each lane has a shooting position. The closest player to
 			this object within a few meters is shown as the shooter for the range
 			on the UI. Currently it is purely cosmetic. The object can be anything,
-			I have successfully used actual shooting positions and hidden helper 
+			I have successfully used actual shooting positions and hidden helper
 			spheres.
 		"target" - A target, gets shot at. If using the "targets" range mode, a popup target
 			that uses the "terc" animation must be used. If using the "spawn" mode, anything
 			that can die can be used.
 		
-	The third element, "l3", indicates the lane number of that object. Only targets 
+	The third element, "l3", indicates the lane number of that object. Only targets
 		and shooting positions have this. The index starts at 1.
 	
-	The fourth element, "t4", is the target's index on its lane. Only targets will 
+	The fourth element, "t4", is the target's index on its lane. Only targets will
 		have it. The index starts at 1.
 	
 	===========================================================================
@@ -91,7 +91,7 @@
 	"r1",			// range tag
 	1,				// lane count
 	10,				// targets per lane
-	[				
+	[
 		// Range sequence
 			// First element defines the type of event:
 			//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
@@ -249,7 +249,7 @@
 ] spawn cav_ranges_fnc_createRange;
 
 [
-	"spawn", //range type 
+	"spawn", //range type
 	"AT Range", // title text
 	"r6", // range tag
 	1, // lane count

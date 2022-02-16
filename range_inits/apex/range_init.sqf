@@ -1,7 +1,6 @@
 // rifle range "rr" - TargetP_Inf_Acc2_F
-// grenade range "gr" - TargetP_Inf_F 
+// grenade range "gr" - TargetP_Inf_F
 // killhouse "kh" - TargetP_Inf_Acc2_NoPop_F (kh_target_1)
-
 
 // grenade launcher range setup
 //{
@@ -25,7 +24,7 @@
 	"rr",			// range tag
 	6,				// lane count
 	8,				// targets per lane
-	[				
+	[
 		// Range sequence
 			// First element defines the type of event:
 			//		ARRAY: target(s)/group(s) to raise. Multiple elements for multiple targets/groups
@@ -33,9 +32,9 @@
 			// Second element: seconds length/delay for that event
 			// Third element (optional): Sound to play out of range speakers
 			// Fourth element (optional): delay between end of this event and start of the next, default 2 if not present
-		["Load one 20 round magazine",5,"Reload"],
-		["Assume a prone position and scan your lane",3,"Prone2"],
-		["Range is hot!",1,"RangeIsHot"],
+		["Load one 20 round magazine",5],
+		["Assume a prone position and scan your lane",3],
+		["Range is hot!",1],
 		["Range is hot!",0,"FD_Course_Active_F",0],
 		[[1],5],
 		[[2],5],
@@ -52,9 +51,9 @@
 		[[7,3],8],
 		[[3,6],8],
 		[[2,5],8],
-		["Reload one 20 round magazine",5,"Reload"],
-		["Assume a prone position and scan your lane",3,"Prone1"],
-		["Range is hot!",1,"RangeIsHot"],
+		["Reload one 20 round magazine",5],
+		["Assume a prone position and scan your lane",3],
+		["Range is hot!",1],
 		["Range is hot!",0,"FD_Course_Active_F",0],
 		[[5],5],
 		[[2],5],
@@ -66,8 +65,8 @@
 		[[6],5],
 		[[3],5],
 		[[2],5],
-		["Assume a kneeling position and scan your lane",3,"Kneel"],
-		["Range is hot!",1,"RangeIsHot"],
+		["Assume a kneeling position and scan your lane",3],
+		["Range is hot!",1],
 		[[1],5],
 		[[3],5],
 		[[4],5],
@@ -78,8 +77,8 @@
 		[[1],5],
 		[[3],5],
 		[[2],5],
-		["Cease Fire!",3,"CeaseFire1"],
-		["Standby for final score...",1,"StandbyScore"],
+		["Cease Fire!",3],
+		["Standby for final score...",1],
 		["Range complete.",0]
 	],
 	
@@ -89,7 +88,7 @@
 				//   values below the last element will show no go
 				//   Not all three are required, [35] would simply return expert above 35, and no go below that
 	true,	// add player actions
-	true	// use custom black texture 
+	true	// use custom black texture
 ] spawn cav_ranges_fnc_createRange;
 
 [
@@ -98,7 +97,7 @@
 	"gr",			// range tag
 	4,				// lane count
 	8,				// targets per lane
-	[				
+	[
 		// Range sequence
 		["Ready your grenades",5],
 		["Range is hot!",1],
@@ -113,4 +112,3 @@
 	[8,6,5],	// qualification tiers
 	true
 ] spawn cav_ranges_fnc_createRange;
-
