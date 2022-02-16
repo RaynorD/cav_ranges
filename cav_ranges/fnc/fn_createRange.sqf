@@ -16,7 +16,9 @@ Parameters:
 	Grouping - target groupings [Array of Arrays of Numbers]
 	Qualification Tiers - number of targets to attain each qual [Array of Integers]
 	Add Instructor Actions - whether to add player-bound actions to start/stop range [Boolean]
-	Lane Colors - Colors that each lane's targets are set to
+	Use Dark Targets (targets range only) - whether to set targets to a dark texture [Boolean]
+	Lane Colors (Spawn range only) - Color to set vehicles on each range. [Array of color arrays [r,g,b,a], must match lane count]
+		Example for Lane 1 red, Lane 2 green, Lane 2 Blue: [[1,0,0,1],[0,1,0,1],[0,0,1,1]]
 
 Returns:
 	Nothing

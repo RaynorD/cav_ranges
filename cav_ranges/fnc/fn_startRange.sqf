@@ -5,17 +5,9 @@ Description:
 	Starts the sequence for a popup target range.
 	Not used for spawn ranges.
 
-Parameters (Standard range parameters, see fn_createRange for detailed info):
-	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
-	Title - String representation of the range [String]
-	Tag - Internal prefix used for the range, so it can find range objects [String]
-	Lane Count - How many lanes there are [Integer]
-	Target Count - Number of targets per range [Integer]
-	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
-	Grouping - target groupings [Array of Arrays of Numbers]
-	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+Parameters (Standard range parameters, see fn_createRange for detailed info).
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:
@@ -78,7 +70,7 @@ while{true} do {
 {
 	_laneTargets = _x;
 	{
-		_target = _x;	
+		_target = _x;
 		_target setVariable ["nopop", true, true];
 		_target animate ["terc",1];
 		[_target, "FD_Target_PopDown_Large_F"] remoteExec ["say3d"];
@@ -211,7 +203,7 @@ SET_RANGE_VAR(rangeActive,false);
 _possibleScore = GET_VAR(_objectCtrl,GVAR(rangeScorePossible));
 _shooters = GET_VAR(_objectCtrl,GVAR(rangeShooters));
 _laneQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
-{ 
+{
 	_score = _rangeScores select _forEachIndex;
 	
 	_shooter = nil;
@@ -234,7 +226,7 @@ _laneQuals = GET_VAR(_objectCtrl,GVAR(rangeScoreQuals));
 					};
 
 					_rangeDoneText = _rangeDoneText + format [" (%1)",_qualText];
-				};	
+				};
 			};
 		};
 		

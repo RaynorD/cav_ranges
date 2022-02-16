@@ -8,19 +8,11 @@ Description:
 	Not used for spawn ranges.
 
 Parameters:
-	Args - (Standard range parameters, see fn_createRange for detailed info):
-		Type - Sets mode of operation for the range [String, ["targets","spawn"]]
-		Title - String representation of the range [String]
-		Tag - Internal prefix used for the range, so it can find range objects [String]
-		Lane Count - How many lanes there are [Integer]
-		Target Count - Number of targets per range [Integer]
-		Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
-		Grouping - target groupings [Array of Arrays of Numbers]
-		Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+	Args - (Standard range parameters, see fn_createRange for detailed info).
 	Show No Go - Whether to set the flag to -1 if below no go threshold [Boolean, optional - default true]
 		(So that AT range doesn't just show no go all the time)
 
-Returns: 
+Returns:
 	Nothing
 
 Locality:

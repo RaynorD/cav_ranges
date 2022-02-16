@@ -5,15 +5,7 @@ Description:
 	Checks for a player close to each shooting position and saves it to the ctrl object
 	It is only run if ther is a player currently in the trigger
 
-Parameters (Standard range parameters, see fn_createRange for detailed info):
-	Type - Sets mode of operation for the range [String, ["targets","spawn"]]
-	Title - String representation of the range [String]
-	Tag - Internal prefix used for the range, so it can find range objects [String]
-	Lane Count - How many lanes there are [Integer]
-	Target Count - Number of targets per range [Integer]
-	Sequence - List of events when the range is started [Array of Arrays of [event, delay]]
-	Grouping - target groupings [Array of Arrays of Numbers]
-	Qualitification Tiers - number of targets to attain each qual [Array of Integers]
+Parameters (Standard range parameters, see fn_createRange for detailed info).
 
 Returns:
 	Nothing
