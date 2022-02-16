@@ -21,7 +21,7 @@ Examples:
 	_this addEventHandler ["Explosion", {_this spawn cav_ranges_fnc_eh_explosion}];
 
 Author:
-	=7Cav=WO1.Raynor.D
+	Raynor.D
 
 ---------------------------------------------------------------------------- */
 

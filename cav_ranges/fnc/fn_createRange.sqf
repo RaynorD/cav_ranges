@@ -67,7 +67,7 @@ Examples:
 	] spawn cav_ranges_fnc_createRange;
 
 Author:
-	=7Cav=WO1.Raynor.D
+	Raynor.D
 
 ---------------------------------------------------------------------------- */
 

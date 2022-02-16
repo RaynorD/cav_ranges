@@ -27,7 +27,7 @@ Examples:
     _this spawn CAV_Ranges_fnc_stopRange;
 
 Author:
-	=7Cav=WO1.Raynor.D
+	Raynor.D
 
 ---------------------------------------------------------------------------- */
 

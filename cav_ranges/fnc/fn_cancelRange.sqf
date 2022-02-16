@@ -26,7 +26,7 @@ Examples:
 	_this remoteExec [CAV_Ranges_fnc_cancelRange,2];
 
 Author:
-	=7Cav=WO1.Raynor.D
+	Raynor.D
 
 ---------------------------------------------------------------------------- */
 
